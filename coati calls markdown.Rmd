@@ -1,0 +1,320 @@
+---
+title: "Coati calls"
+author: "Emily"
+date: "8/19/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy = TRUE, tidy.opts = list(comment = FALSE))
+```
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE , results='hide', fig.align = "center"}
+
+library(seewave)
+library(tuneR)
+library(ggplot2)
+library(DT)
+
+#upload single calls from edic mini recordings from BCI 2020
+
+#aggressive calls:
+squeal_down <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/squeal_down.wav')
+squeal_grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/squeal grunt.wav')
+chittering <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chittering.wav')
+chitter_ultra <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chitterultra.wav') #from Jenna recordings T000006
+long_chitter <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/long chitter.wav')
+growl <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/growl cut.wav')
+#aggressive call sequence
+agg_seq <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence.wav')
+agg_seq2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence2.wav')
+agg_seq3 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence3.wav')
+agg_seq4 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence4.wav')
+agg_seq5 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence5.wav')
+agg_seq6 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence6.wav')
+
+#contact calls
+chirp_grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpgrunt_cut.wav')
+chirp_click_grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpclickgrunt2.wav')
+chirp_grunt_snort <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpgruntsnort.wav')#from file 3 6887 edic mini
+grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/grunt.wav') #from 9480_1_FL8
+clicks <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/clicks.wav') ##from Chris Hass Ramsey Canyon Coatis video
+chirp <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirp.wav') #from 9466_1_FL6
+chirp2 <-readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirp2.wav') #from 9480_1_FL3
+chirps <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/2chirps.wav') #from file 3 6887 edic mini
+chirp_ultra <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpeultra.wav') #from Jenna recordings T000006
+
+#alarm
+chop_chop <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chop chop.wav') 
+barking <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking.wav') #from Chris Hass Ramsey Canyon Coatis video
+barking2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking2.wav') #from Chris Hass Ramsey Canyon Coatis video
+barking3 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking3.wav') #from Chris Hass Ramsey Canyon Coatis video
+barking4 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking4.wav') #from Chris Hass Ramsey Canyon Coatis video
+bark <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barkcomplex.wav') #from Chris Hass Ramsey Canyon Coatis video
+
+#mating
+dolphin_call <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/dolphin call2.wav') #call comes from Galaxy 9463_2_FL1
+
+#short calls
+bop <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/bop.wav') #call comes from 9471_1_FL4 
+
+#mechanical sounds
+snorts <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/snorts.wav') ##from file 3 6887 edic mini
+
+#sleep sounds
+snore_hum <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/snore.wav') #from 9480_1_FL8
+hum_snore <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/snore2.wav') #from 9480_1_FL8
+hum <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/sleephum.wav') #from 9480_1_FL8
+
+#baby coati calls
+baby_coati <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babycoati.wav') #from Lydia's whatsapp recordings
+baby_chitters <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babychitters.wav') #from Chris recordings
+baby_mews <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babymews.wav') #from Chris recordings
+baby_purr <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babypurr.wav') #from Chris recordings
+baby_whines <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babywhines.wav') #from Chris recordings
+baby_whistle <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babywhistle.wav') #from Chris recordings
+
+
+#domestic coati recordings from Chris:
+cocochitters <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cocochitters.wav') 
+cocochitters2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cocochitters2.wav') #from Florida coatis chocho, seems frustrated/angry with Chris who was recording him
+chuckles <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chuckles.wav') #from FL_110827_48k_01
+cackle <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cackle.wav') #from FL_110827_48k_02
+cackle2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cackle2.wav') #from FL_110827_48k_02
+excitement_chirp <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/excitementchirps.wav') #from FL_110912_48k_01
+excitement_chirp2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/excitementchirps2.wav') #from FL_110912_48k_01
+
+f=22050
+```
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, fastdisp=TRUE}
+#colour schemes for the different call types
+colors.agg <- colorRampPalette(c("white", "seashell", "plum1", "deeppink4", "maroon4", "black"))
+colors.agg.2<- colorRampPalette(c("white","lavenderblush", "plum1","magenta4","darkorchid4", "black"))
+colors.cont <- colorRampPalette(c("white", "seashell","darkolivegreen2", "darkolivegreen4", "darkolivegreen", "black","red"))
+colors.alarm <- colorRampPalette(c("white","orange", "blue3", "black"))
+colors.alarm.2 <- colorRampPalette(c("white","yellow", "blue3", "black"))
+colors.alarm.3 <- colorRampPalette(c("white","yellow","turquoise1", "blue3", "black"))
+colors.sleep <- colorRampPalette(c("white","cadetblue", "blue3", "black"))
+```
+
+### Aggressive calls
+```{r echo = FALSE, warning = FALSE, message = FALSE, fig.show="hold", out.width="50%", fastdisp=TRUE}
+#aggressive calls
+
+spectro(squeal_down,f=f,ovlp=85,zp=16,
+        palette=colors.agg, osc=TRUE, collevels=seq(-35,0), grid = F, main="squeal down")
+
+###different types of squeals
+
+spectro(squeal_grunt,f=f,ovlp=85,zp=16,
+        palette=colors.agg,osc=TRUE, collevels=seq(-40,0.5), grid = F, main = "squeal grunt")
+
+spectro(chittering,f=f,ovlp=85,zp=16,
+        palette=colors.agg,osc=TRUE, collevels=seq(-29,0), grid = F, main = "chittering")
+
+spectro(chitter_ultra,f=96000,ovlp=85,zp=16,
+        palette=colors.agg,osc=TRUE, collevels=seq(-59,0), grid = F, main = "chittering recorded with ultrasound recorder")
+
+spectro(long_chitter,f=f,ovlp=85,zp=16,
+        palette=colors.agg,osc=TRUE, collevels=seq(-34,0), grid = F, main = "long chitter")
+
+spectro(growl,f=f,ovlp=85,zp=16,
+        palette=colors.agg,osc=TRUE, collevels=seq(-37,0), grid = F, main = "growl")
+
+
+```
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,fig.show='hide'}
+#making properties table for aggressive calls
+squeal_down_dat <- meanspec(cutw(squeal_down,f=22050,from=0.06, to = 0.23 ,plot=T),f=22050,plot=T)
+prop1 <- as.data.frame(specprop(squeal_down_dat,f=22050))
+prop1$call_type <- "squeal_down"
+
+squeal_grunt_dat <- meanspec(cutw(squeal_grunt,f=22050,from=0, to = 0.12 ,plot=T),f=22050,plot=T)
+prop2 <- as.data.frame(specprop(squeal_grunt_dat,f=22050))
+prop2$call_type <- "squeal_grunt"
+
+chitter_dat <- meanspec(cutw(chittering,f=22050,from=0.23, to = 0.35 ,plot=T),f=22050,plot=T)
+prop3 <- as.data.frame(specprop(chitter_dat,f=22050))
+prop3$call_type <- "chitter"
+
+long_chitter_dat <- meanspec(cutw(long_chitter,f=22050,from=0.18, to = 0.33 ,plot=T),f=22050,plot=T)
+prop4 <- as.data.frame(specprop(long_chitter_dat,f=22050))
+prop4$call_type <- "long_chitter"
+
+growl_dat <- meanspec(growl,f=22050,plot=T)
+prop5 <- as.data.frame(specprop(growl_dat,f=22050))
+prop5$call_type <- "growl"
+
+agg_dat <- rbind(prop1, prop2, prop3, prop4, prop5)
+agg_dat <- agg_dat[,c(15, 1:14)]
+
+```
+
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, comment="", fig.show="hold", out.width="20%", fastdisp=TRUE}
+
+datatable(format.data.frame(agg_dat, digits = 5), options = list(pageLenth = 5, autoWidth = TRUE))
+
+```
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,fig.show='hide'}
+agg_seq6 <- cutw(agg_seq6,f=22050,from=2, to = 4 ,plot=F)
+```
+
+### Aggressive call sequences
+```{r echo = FALSE, warning = FALSE, message = FALSE, comment="", fig.show="hold", out.width="50%", fastdisp=TRUE}
+
+spectro(agg_seq,f=f,ovlp=85,zp=16,
+        palette=colors.agg.2,osc=TRUE, collevels=seq(-45,0), grid = F, main = "aggressive call sequence") 
+spectro(agg_seq2,f=f,ovlp=85,zp=16,
+        palette=colors.agg.2,osc=TRUE, collevels=seq(-45,0), grid = F, main = "aggressive call sequence 2")
+spectro(agg_seq3,f=f,ovlp=85,zp=16,
+        palette=colors.agg.2,osc=TRUE, collevels=seq(-45,0), grid = F, main = "aggressive call sequence 3") #some aliasing happening here
+spectro(agg_seq4,f=f,ovlp=85,zp=16,
+        palette=colors.agg.2,osc=TRUE, collevels=seq(-40,0), grid = F, main = "aggressive call sequence 4") #some aliasing happening here
+spectro(agg_seq5,f=f,ovlp=85,zp=16,
+        palette=colors.agg.2,osc=TRUE, collevels=seq(-40,0), grid = F, main = "aggressive call sequence 5") #some aliasing happening here
+spectro(agg_seq6,f=f,ovlp=85,zp=16,
+        palette=colors.agg.2,osc=TRUE, collevels=seq(-50,0), grid = F, main = "aggressive call sequence 6") #some aliasing happening here
+```
+
+### Contact calls
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%", fastdisp=TRUE}
+#contact calls
+
+#versions of the chirp grunt - splits into different components of the chirp, click and grunt
+spectro(chirp_grunt,f=f,ovlp=85,zp=16,
+        palette=colors.cont,osc=TRUE, collevels=seq(-40,0), grid = F, main = "chirp grunt")
+spectro(chirp_click_grunt,f=f,ovlp=85,zp=16,
+        palette=colors.cont,osc=TRUE, collevels=seq(-50,0), grid = F, main = "chirp click grunt")
+###click grunt
+spectro(clicks,f=48000,ovlp=85,zp=16,
+        palette=colors.cont,osc=TRUE, collevels=seq(-40,0), grid = F, main = "click grunt", flog = F) #from Chris Hass Ramsey Canyon Coatis - could be  move call when in succession
+
+###chirp grunt snort
+spectro(chirp_grunt_snort,f=f,ovlp=85,zp=16,
+        palette=colors.cont,osc=TRUE, collevels=seq(-45,0), grid = F, main = "chirp grunt snort")
+#-----maybe the chirp grunt with a stronger grunt is when the coati wants the group to move
+
+###grunt
+spectro(grunt,f=f,ovlp=85,zp=16,
+        palette=colors.cont,osc=TRUE, collevels=seq(-45,0), grid = F, main = "grunt", flog = T) #show in log scale to see grunt more clearly
+
+#this chirp isn't necessary
+#spectro(chirp2,f=f,ovlp=85,zp=16,palette=colors.cont,osc=TRUE, collevels=seq(-45,0), grid = F, main = "chirp")
+#this plot has removed the background noise below 2kHz:
+spectro(fir(chirps, f=22050, from=3000, to=22050, bandpass=T, rescale = F ),f=f,ovlp=85,zp=16, palette=colors.cont,osc=TRUE, collevels=seq(-45,0), grid = F, main = "2 chirps")
+#recording with ultrasound recorder to look at the peak frequency 
+spectro(chirp_ultra,f=96000,ovlp=85,zp=16, palette=colors.cont,osc=TRUE, collevels=seq(-40,0), grid = F, main = "chirp recorded with ultrasound recorder")
+```
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,fig.show='hide'}
+chop_cut<-cutw(chop_chop,f=22050,from=0.15, to = 1.7 ,plot=T)
+```
+
+### Alarm calls - mechanical
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+spectro(chop_cut,f=f,ovlp=85,zp=16,
+        palette=colors.alarm,osc=TRUE, collevels=seq(-40,0), grid = F, main = "chop chop")
+#spectro(barking,f=48000,ovlp=85,zp=16,
+#        palette=colors.alarm,osc=TRUE, collevels=seq(-38,0), grid = F, main = "barking - Chris #recording", flog = F)
+#spectro(barking2,f=32000,ovlp=85,zp=16,
+#        palette=colors.alarm,osc=TRUE, collevels=seq(-45,0), grid = F, main = "barking - Chris #recording", flog = F)
+spectro(bark,f=32000,ovlp=85,zp=16,
+        palette=colors.alarm,osc=TRUE, collevels=seq(-50,0), grid = F, main = "bark - Chris recording", flog = F) #looks like a chirpgrunt then chirp click before bark
+spectro(barking3,f=32000,ovlp=85,zp=16,
+        palette=colors.alarm,osc=TRUE, collevels=seq(-50,0), grid = F, main = "barking with chirps - Chris recording", flog = F) #looks like a chirp click before some of the barks
+spectro(barking4,f=32000,ovlp=85,zp=16,
+        palette=colors.alarm,osc=TRUE, collevels=seq(-40,0), grid = F, main = "barking with chirp and snort - Chris recording", flog = F) #looks like a chirp click before first bark and a snort at last bark
+```
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,fig.show='hide'}
+
+#cutting dolphin call to one note to look at it in more detail
+dolphin_cut<-cutw(dolphin_call,f=22050,from=0.69, to = 0.89 ,plot=T)
+```
+### Mating call
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+
+png(filename='C:/Users/egrout/Desktop/test2.png', height=800, width = 1600)
+par(mfrow=c(2,1), mar = c(0,0,0,0))
+p <- spectro(dolphin_call, f=f,ovlp=85,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "dolphin call", plot=F)
+p2 <- spectro(dolphin_call, f=f,ovlp=85,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "single dolphin call", plot=F)
+
+
+library(fields)
+image(t(p$amp), x= p$time, y= p$freq)
+image(t(p$amp), x= p$time, y= p$freq)
+dev.off()
+
+```
+
+### Short note calls
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+spectro(bop, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-25,0), grid = F, main = "bop")
+```
+
+### Mechanical sounds
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+spectro(snorts, f=f,ovlp=85,palette=colors.alarm,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "snorting")
+```
+
+### Sleep sounds
+
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+spectro(snore_hum, f=f,ovlp=85,palette=colors.sleep,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "snore hum")
+spectro(hum_snore, f=f,ovlp=85,palette=colors.sleep,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "hum snore")
+spectro(hum, f=f,ovlp=85,palette=colors.sleep,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "hum")
+```
+
+### Cub calls
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+spectro(baby_coati, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-60,0), grid = F, main = "cub chitters")
+spectro(baby_chitters, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-60,0), grid = F, main = "cub chitters - Chris recording")
+spectro(baby_mews, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-60,0), grid = F, main = "cub mews - Chris recording")
+spectro(baby_purr, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-35,0), grid = F, main = "cub purr - Chris recording", flog = T)
+spectro(baby_whines, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-50,0), grid = F, main = "cub whines- Chris recording")
+spectro(baby_whistle, f=f,ovlp=85,palette=colors.cont,zp=16, osc=TRUE, collevels=seq(-60,0), grid = F, main = "cub whistle - Chris recording")
+
+```
+
+
+### Domestic coati recordings from Chris
+```{r echo = FALSE, warning = FALSE, message = FALSE,  fig.show="hold", out.width="50%"}
+spectro(cocochitters,f=32000,ovlp=85,zp=16,
+        palette=colors.alarm.2,osc=TRUE, collevels=seq(-50,0), grid = F, main = "frustration chitters from domestic male")
+spectro(cocochitters2,f=32000,ovlp=85,zp=16,
+        palette=colors.alarm.2,osc=TRUE, collevels=seq(-50,0), grid = F, main = "frustration chitters from domestic male")
+spectro(chuckles,f=48000,ovlp=85,zp=16,
+        palette=colors.alarm.3,osc=TRUE, collevels=seq(-70,0), grid = F, main = "chuckles") #fast paced exhales with chirps, could be excitement call?
+spectro(cackle,f=48000,ovlp=85,zp=16,
+        palette=colors.alarm.3,osc=TRUE, collevels=seq(-60,0), grid = F, main = "cackling") #fast paced exhales with chitters, could be excitement call?
+spectro(cackle2,f=48000,ovlp=85,zp=16,
+        palette=colors.alarm.3,osc=TRUE, collevels=seq(-50,0), grid = F, main = "cackling") #fast paced exhales with chitters, could be excitement call?
+spectro(excitement_chirp,f=48000,ovlp=85,zp=16,
+        palette=colors.alarm.3,osc=TRUE, collevels=seq(-50,0), grid = F, main = "excitement chirps") #with exhales same as chuckle/cackle, before given food so likely excited 
+spectro(excitement_chirp2,f=48000,ovlp=85,zp=16,
+        palette=colors.alarm.3,osc=TRUE, collevels=seq(-50,0), grid = F, main = "excitement chirps") #with exhales same as chuckle/cackle, before given food so likely excited 
+```
+
+
+More calls to think about:
+* giggles
+* squeaks? or is this the same as a chirp
+
+
+
+
+
+
