@@ -3,6 +3,7 @@ library(tuneR)
 library(ggplot2)
 
 #single call from edic mini
+
 chirp.wav.file <- 'F:/PhD/All things coati/Edic mini calls/squeal_down.wav'
 coati <-readWave(chirp.wav.file)
 f=22050
@@ -34,6 +35,7 @@ dev.off()
 
 
 #make quick spectrogram, flog so frequency is logarithmic not linear - can change to false
+windows()
 spectro(coati, f=22050, palette = rainbow, flog = F)
 #2D spectrogram
 spectro(coati, f=22050, ovlp=50, zp=16, collevels=seq(-40,0, 0.5), cont = F)
@@ -58,7 +60,8 @@ spectro(cutplot,f=22050,ovlp=85,zp=16,osc=TRUE,palette=reverse.heat.colors,
         colbg="black",colgrid="white", colwave="white",colaxis="white",collab="white", grid = F, listen = T)
 
 #changing the colours
-jet.colors <- colorRampPalette(c("white", "seashell","seashell1", "plum1", "deeppink4", "darkblue"))
+jet.colors <- colorRampPalette(c("white","white", "seashell","seashell1", "plum1", "deeppink4", "darkblue", "black"))
+
 spectro(cutplot, f=22050, ovlp=75, palette=jet.colors, collevels=seq(-45,0,0.5))
 
 #heat map spectrogram
@@ -159,5 +162,4 @@ wf(x=m, lines=TRUE, col="#0000FF50",xlab="Time", ylab="Amplitude",
 ##not sure what this is good for....
 
 
-bla
 

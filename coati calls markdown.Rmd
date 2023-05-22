@@ -22,70 +22,70 @@ library(DT)
 #upload single calls from edic mini recordings from BCI 2020
 
 #aggressive calls:
-squeal_down <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/squeal_down.wav')
-squeal_grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/squeal grunt.wav')
-chittering <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chittering.wav')
-chitter_ultra <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chitterultra.wav') #from Jenna recordings T000006
-long_chitter <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/long chitter.wav')
-growl <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/growl cut.wav')
+squeal_down <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/squeal_down.wav')
+squeal_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/squeal grunt.wav')
+chittering <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chittering.wav')
+chitter_ultra <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chitterultra.wav') #from Jenna recordings T000006
+long_chitter <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/long chitter.wav')
+growl <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/growl cut.wav')
 #aggressive call sequence
-agg_seq <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence.wav')
-agg_seq2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence2.wav')
-agg_seq3 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence3.wav')
-agg_seq4 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence4.wav')
-agg_seq5 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence5.wav')
-agg_seq6 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/aggsequence6.wav')
+agg_seq <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence.wav')
+agg_seq2 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence2.wav')
+agg_seq3 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence3.wav')
+agg_seq4 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence4.wav')
+agg_seq5 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence5.wav')
+agg_seq6 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence6.wav')
 
 #contact calls
-chirp_grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpgrunt_cut.wav')
-chirp_click_grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpclickgrunt2.wav')
-chirp_grunt_snort <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpgruntsnort.wav')#from file 3 6887 edic mini
-grunt <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/grunt.wav') #from 9480_1_FL8
-clicks <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/clicks.wav') ##from Chris Hass Ramsey Canyon Coatis video
-chirp <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirp.wav') #from 9466_1_FL6
-chirp2 <-readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirp2.wav') #from 9480_1_FL3
-chirps <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/2chirps.wav') #from file 3 6887 edic mini
-chirp_ultra <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chirpeultra.wav') #from Jenna recordings T000006
+chirp_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpgrunt_cut.wav')
+chirp_click_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpclickgrunt2.wav')
+chirp_grunt_snort <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpgruntsnort.wav')#from file 3 6887 edic mini
+grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/grunt.wav') #from 9480_1_FL8
+clicks <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/clicks.wav') ##from Chris Hass Ramsey Canyon Coatis video
+chirp <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirp.wav') #from 9466_1_FL6
+chirp2 <-readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirp2.wav') #from 9480_1_FL3
+chirps <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/2chirps.wav') #from file 3 6887 edic mini
+chirp_ultra <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpeultra.wav') #from Jenna recordings T000006
 
 #alarm
-chop_chop <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chop chop.wav') 
-barking <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking.wav') #from Chris Hass Ramsey Canyon Coatis video
-barking2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking2.wav') #from Chris Hass Ramsey Canyon Coatis video
-barking3 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking3.wav') #from Chris Hass Ramsey Canyon Coatis video
-barking4 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barking4.wav') #from Chris Hass Ramsey Canyon Coatis video
-bark <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/barkcomplex.wav') #from Chris Hass Ramsey Canyon Coatis video
+chop_chop <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chop chop.wav') 
+barking <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barking.wav') #from Chris Hass Ramsey Canyon Coatis video
+barking2 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barking2.wav') #from Chris Hass Ramsey Canyon Coatis video
+barking3 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barking3.wav') #from Chris Hass Ramsey Canyon Coatis video
+barking4 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barking4.wav') #from Chris Hass Ramsey Canyon Coatis video
+bark <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barkcomplex.wav') #from Chris Hass Ramsey Canyon Coatis video
 
 #mating
-dolphin_call <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/dolphin call2.wav') #call comes from Galaxy 9463_2_FL1
+dolphin_call <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/dolphin call2.wav') #call comes from Galaxy 9463_2_FL1
 
 #short calls
-bop <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/bop.wav') #call comes from 9471_1_FL4 
+bop <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/bop.wav') #call comes from 9471_1_FL4 
 
 #mechanical sounds
-snorts <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/snorts.wav') ##from file 3 6887 edic mini
+snorts <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/snorts.wav') ##from file 3 6887 edic mini
 
 #sleep sounds
-snore_hum <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/snore.wav') #from 9480_1_FL8
-hum_snore <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/snore2.wav') #from 9480_1_FL8
-hum <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/sleephum.wav') #from 9480_1_FL8
+snore_hum <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/snore.wav') #from 9480_1_FL8
+hum_snore <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/snore2.wav') #from 9480_1_FL8
+hum <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/sleephum.wav') #from 9480_1_FL8
 
 #baby coati calls
-baby_coati <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babycoati.wav') #from Lydia's whatsapp recordings
-baby_chitters <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babychitters.wav') #from Chris recordings
-baby_mews <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babymews.wav') #from Chris recordings
-baby_purr <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babypurr.wav') #from Chris recordings
-baby_whines <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babywhines.wav') #from Chris recordings
-baby_whistle <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/babywhistle.wav') #from Chris recordings
+baby_coati <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babycoati.wav') #from Lydia's whatsapp recordings
+baby_chitters <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babychitters.wav') #from Chris recordings
+baby_mews <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babymews.wav') #from Chris recordings
+baby_purr <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babypurr.wav') #from Chris recordings
+baby_whines <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babywhines.wav') #from Chris recordings
+baby_whistle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babywhistle.wav') #from Chris recordings
 
 
 #domestic coati recordings from Chris:
-cocochitters <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cocochitters.wav') 
-cocochitters2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cocochitters2.wav') #from Florida coatis chocho, seems frustrated/angry with Chris who was recording him
-chuckles <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/chuckles.wav') #from FL_110827_48k_01
-cackle <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cackle.wav') #from FL_110827_48k_02
-cackle2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/cackle2.wav') #from FL_110827_48k_02
-excitement_chirp <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/excitementchirps.wav') #from FL_110912_48k_01
-excitement_chirp2 <- readWave('E:/PhD/All things coati/Edic mini calls/each call type/excitementchirps2.wav') #from FL_110912_48k_01
+cocochitters <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/cocochitters.wav') 
+cocochitters2 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/cocochitters2.wav') #from Florida coatis chocho, seems frustrated/angry with Chris who was recording him
+chuckles <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chuckles.wav') #from FL_110827_48k_01
+cackle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/cackle.wav') #from FL_110827_48k_02
+cackle2 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/cackle2.wav') #from FL_110827_48k_02
+excitement_chirp <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/excitementchirps.wav') #from FL_110912_48k_01
+excitement_chirp2 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/excitementchirps2.wav') #from FL_110912_48k_01
 
 f=22050
 ```
