@@ -10,7 +10,9 @@ library(plyr)
 jet.colors <- colorRampPalette(c("white","white", "seashell","seashell1", "plum1", "deeppink4", "darkblue", "black"))
 
 #list of features to keep
-keep <- c("mode", "median", "sh", "Q25", "Q75", "skewness", "kurtosis", "cent", "sfm")
+keep <- c("mode", "median", "sh", "Q25", "Q75","IQR", "skewness", "kurtosis", "cent", "sfm")
+
+#calls <- c("growl", "chirp", "chitter")
 
 # mean	- mean frequency (see mean)
 # sd	- standard deviation of the mean (see sd)
@@ -26,6 +28,10 @@ keep <- c("mode", "median", "sh", "Q25", "Q75", "skewness", "kurtosis", "cent", 
 # sfm	- spectral flatness measure (see sfm)
 # sh	- spectral entropy (see sh)
 # prec	- frequency precision of the spectrum
+
+# shannon entropy - The Shannon spectral entropy of a noisy signal will tend towards 1 whereas the Shannon spectral entropy of a pure tone signal will tend towards 0
+
+#ACI - computes the variability of the intensities registered in audio-recordings
 
 #directory
 dir <- "F:/PhD/All things coati/Edic mini calls/each call type/growl/"
@@ -46,37 +52,28 @@ for (i in 1:length(lwf)) {
   #spectro(lwf[[i]],f=22050,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
   f = lwf[[i]]@samp.rate
   dat <- meanspec(lwf[[i]],f=f,plot=F)
-  
   dat2 <- as.data.frame(dat)
-  
   #excluding rows containing 1.0000
   dat2 <- subset(dat2, y != 1)
   #exclude rows where x is 0
   dat2 <- subset(dat2, x != 0)
   #excluding values greater than 4kHz
   dat2 <- subset(dat2, x < 4)
-  
   #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
   dom_freq <- dat2[dat2$y == max(dat2$y),1]
-  
   prop1 <- as.data.frame(specprop(dat,f= lwf[[i]]@samp.rate))
-  
-  #only keeping these measures:
-  #mode: dominant frequency
-  #median: median frequency
-  #sh: Shannon entropy - The Shannon spectral entropy of a noisy signal will tend towards 1 whereas the Shannon spectral entropy of a pure tone signal will tend towards 0
   prop1 <- prop1[, keep] 
   prop1$dom_freq <- dom_freq*1000
-  
   #Acoustic complexity index
-  prop1$ACI <- ACI(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #prop1$ACI <- ACI(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
   #Entropy
   prop1$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
   prop1$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
   prop1$name <- "growl"
   prop1$file <- all_names[i]
+  prop1$sum_calls <- length(all_names)
   prop <- rbind(prop, prop1)
-  dev.off()
+
 }
 
 
@@ -89,45 +86,35 @@ lwf <- lapply(filenames, readWave)
 
 #i = 3
 for (i in 1:length(lwf)) {
-  
   #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
-  
   f = lwf[[i]]@samp.rate
-  
   #incase we wanted to resample but I don't think this is necessary 
   #if (f > 100000){
   #  lwf[[i]] <- resamp(lwf[[i]], f = lwf[[i]]@samp.rate, g = 50000, output = "Wave")
   #}
-  
   #dev.off()
   dat <- meanspec(lwf[[i]],f= lwf[[i]]@samp.rate , plot= F)
   dat2 <- as.data.frame(dat)
-  
   #excluding rows containing 1.0000
   dat2 <- subset(dat2, y != 1)
   #exclude rows where x is 0
   dat2 <- subset(dat2, x != 0)
   #excluding values less than 4kHz
   dat2 <- subset(dat2, x > 4)
-  
-  
   #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
   dom_freq <- dat2[dat2$y == max(dat2$y),1]
-  
   prop2 <- as.data.frame(specprop(dat,f= lwf[[i]]@samp.rate))
   prop2 <- prop2[, keep] 
   prop2$dom_freq <- dom_freq*1000
-  
   #Acoustic complexity index
-  prop2$ACI <- ACI(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #prop2$ACI <- ACI(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
   #Entropy
   prop2$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
   prop2$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
   prop2$name <- "chirp"
   prop2$file <- all_names[i]
-  
+  prop2$sum_calls <- length(all_names)
   prop <- rbind(prop, prop2)
-
 }
 
 
@@ -142,39 +129,247 @@ i = 7
 for (i in 1:length(lwf)) {
   
   #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
-  
   f = lwf[[i]]@samp.rate
-  
   dat <- meanspec(lwf[[i]],f= lwf[[i]]@samp.rate , plot= F)
   dat2 <- as.data.frame(dat)
-  
   #excluding rows where y is 1.0000
   dat2 <- subset(dat2, y != 1)
   #exclude rows where x is 0
   dat2 <- subset(dat2, x != 0)
-  
   #excluding values less than 4kHz
   #dat2 <- subset(dat2, x > 4)
-  
   #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
   dom_freq <- dat2[dat2$y == max(dat2$y), 1]
-  
   prop3 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
   prop3 <- prop3[, keep] 
   prop3$dom_freq <- dom_freq*1000
-  
   #Acoustic complexity index
-  prop3$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
-  
+  #prop3$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
   #Entropy
   prop3$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
   prop3$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
   prop3$name <- "chitter"
   prop3$file <- all_names[i]
-  
+  prop3$sum_calls <- length(all_names)
   prop <- rbind(prop, prop3)
   
 }
+
+
+#click
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/click/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+i = 3
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #excluding values less than 4kHz
+  #dat2 <- subset(dat2, x > 4)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop4 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop4 <- prop4[, keep] 
+  prop4$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop4$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop4$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop4$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop4$name <- "click"
+  prop4$file <- all_names[i]
+  prop4$sum_calls <- length(all_names)
+  prop <- rbind(prop, prop4)
+  
+}
+
+
+#grunt
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/grunt/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+i = 3
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #excluding values greater than 1.5kHz
+  dat2 <- subset(dat2, x < 1.5)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop5 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop5 <- prop5[, keep] 
+  prop5$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop5$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop5$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop5$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop5$name <- "grunt"
+  prop5$file <- all_names[i]
+  prop5$sum_calls <- length(all_names)
+  prop <- rbind(prop, prop5)
+  
+}
+
+
+#dc
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/dc/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop6 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop6 <- prop6[, keep] 
+  prop6$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop6$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop6$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop6$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop6$name <- "dc"
+  prop6$file <- all_names[i]
+  prop6$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop6)
+  
+}
+
+#vibrate
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/vibrate/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop7 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop7 <- prop7[, keep] 
+  prop7$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop7$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop7$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop7$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop7$name <- "vibrate"
+  prop7$file <- all_names[i]
+  prop7$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop7)
+  
+}
+
+#squeal
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/squeal/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop8 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop8 <- prop8[, keep] 
+  prop8$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop8$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop8$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop8$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop8$name <- "squeal"
+  prop8$file <- all_names[i]
+  prop8$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop8)
+  
+}
+
+
+#bark
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/bark/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop9 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop9 <- prop9[, keep] 
+  prop9$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop9$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop9$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop9$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop9$name <- "bark"
+  prop9$file <- all_names[i]
+  prop9$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop9)
+  
+}
+
+
+
+
 
 
 #this works, now need to think about what other features should be extracted
@@ -184,12 +379,61 @@ boxplot(dom_freq ~ name, prop)
 boxplot(sfm ~ name, prop)   
 
 
-stand_dev <- data.frame(matrix(ncol = (length(keep) + 6), nrow = 3))
+#--------------------------------------------------------------------------
+#make a dataframe with the standard deviation of each feature for each call type to add to paper
+
+### NEED TO ADD SUM_CALLS TO THIS DATAFRAME (TO GET NUMBER OF CALLS USED FOR THE ACOUSTIC ANALYSIS)
+
+#make empty dataframe with same number of columns in prop and same number of rows as call type
+stand_dev <- data.frame(matrix(ncol = ((length(keep) + 6)), nrow = length(unique(prop$name))))
 colnames(stand_dev) <- colnames(prop)
+#remove column with filename
+stand_dev <- stand_dev[ , !names(stand_dev) %in% c("file")] 
 
-stand_dev$name[1:3] <- c("growl", "chirp", "chitter")
+calls <- unique(prop$name)
+stand_dev$name <- calls
 
-stand_dev$mode[1] <- sd(prop$mode[prop$name == "growl"])
+#for loop to extract mean and sd for each call feature for each call type and puts info in stand_dev dataframe
+for (i in 1:nrow(stand_dev)){
+  
+  call_name <- stand_dev$name[i]
+  call_type <- prop[prop$name == call_name,]
+  #removing filename here, otherwise adds extra column in second forloop
+  call_type <- call_type[ , !names(call_type) %in% c("file", "sum_calls")] 
+  sum_calls <- length(call_type[,1])
+  
+  for (j in 1:ncol(call_type)){
+    
+    call_feature <- call_type[,j]
+    mean_call_feature <- round(mean(call_feature), digits = 3)
+    stand_dev_feature <- round(sd(call_feature), digits = 3)
+    stand_dev_feature <- paste("±", stand_dev_feature, sep = " ")
+    #joining the mean and sd to the same cell
+    mean_sd <- paste(mean_call_feature, stand_dev_feature, sep = " ")
+    #saving mean and standard deviation back into stand_dev dataframe
+    stand_dev[i,j] <- mean_sd
+    
+  }
+ #adding name back in, otherwise gets overrun in second forloop
+  stand_dev$name[i] <- call_name
+ #adding sum of calls for each call type
+  stand_dev$sum_calls[i] <- sum_calls
+  
+}
+
+
+
+#remove columns not wanted in paper
+stand_dev2 <- stand_dev[,c("name", "dom_freq", )]
+
+#colnames(filt2)[colnames(filt2) == "mode"] <- "Dominant Frequency (Hz)"
+
+write.table(filt2,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions2.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
+
+
+
+
+
 
 
 
