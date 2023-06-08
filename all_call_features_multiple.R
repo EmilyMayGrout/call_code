@@ -24,8 +24,8 @@ keep <- c("mode", "median", "sh", "Q25", "Q75","IQR", "skewness", "kurtosis", "c
 # IQR	- interquartile range (see IQR)
 # cent	- centroid
 # skewness	- skewness, a measure of asymmetry
-# kurtosis	- kurtosis, a measure of peakedness
-# sfm	- spectral flatness measure (see sfm)
+# kurtosis	- kurtosis, a measure of peakedness. if K > 3 when the spectrum is leptokurtic, i.e. it has more items near the center and at the tails, with fewer items in the shoulders relative to normal distribution with the same mean and variance.
+# sfm	- spectral flatness measure (see sfm) This function estimates the flatness of a frequency spectrum. The SFM of a noisy signal will tend towards 1 whereas the SFM of a pure tone signal will tend towards 0.
 # sh	- spectral entropy (see sh)
 # prec	- frequency precision of the spectrum
 
@@ -240,7 +240,7 @@ lwf <- lapply(filenames, readWave)
 for (i in 1:length(lwf)) {
   #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
   f = lwf[[i]]@samp.rate
-  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
   dat2 <- as.data.frame(dat)
   #excluding rows where y is 1.0000
   dat2 <- subset(dat2, y != 1)
@@ -274,7 +274,7 @@ lwf <- lapply(filenames, readWave)
 for (i in 1:length(lwf)) {
   #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
   f = lwf[[i]]@samp.rate
-  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
   dat2 <- as.data.frame(dat)
   #excluding rows where y is 1.0000
   dat2 <- subset(dat2, y != 1)
@@ -308,7 +308,7 @@ lwf <- lapply(filenames, readWave)
 for (i in 1:length(lwf)) {
   #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
   f = lwf[[i]]@samp.rate
-  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=T)
   dat2 <- as.data.frame(dat)
   #excluding rows where y is 1.0000
   dat2 <- subset(dat2, y != 1)
@@ -343,7 +343,7 @@ lwf <- lapply(filenames, readWave)
 for (i in 1:length(lwf)) {
   #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
   f = lwf[[i]]@samp.rate
-  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F, flim = c(0,2))
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
   dat2 <- as.data.frame(dat)
   #excluding rows where y is 1.0000
   dat2 <- subset(dat2, y != 1)
@@ -368,6 +368,39 @@ for (i in 1:length(lwf)) {
 }
 
 
+#hum
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/hum/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop10 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop10 <- prop10[, keep] 
+  prop10$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop10$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop10$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop10$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop10$name <- "hum"
+  prop10$file <- all_names[i]
+  prop10$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop10)
+  
+}
 
 
 
@@ -423,12 +456,16 @@ for (i in 1:nrow(stand_dev)){
 
 
 
-#remove columns not wanted in paper
-stand_dev2 <- stand_dev[,c("name", "dom_freq", )]
+#remove columns not wanted in paper and reordering call types
+stand_dev2 <- stand_dev[,c("name","duration", "dom_freq", "sh", "sfm", "Q25", "Q75", "IQR")]
+stand_dev2 <- stand_dev2 %>% arrange(factor(name, levels = c("chirp", "click", "grunt", "chitter", "squeal", "growl", "bark", "dc", "hum", "vibrate" )))
+
+
+
 
 #colnames(filt2)[colnames(filt2) == "mode"] <- "Dominant Frequency (Hz)"
 
-write.table(filt2,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions2.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
+write.table(stand_dev2,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions3.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
 
 
 
