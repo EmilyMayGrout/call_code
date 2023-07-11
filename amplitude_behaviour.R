@@ -31,7 +31,7 @@ env <- env %>%
   mutate(env_mean = rollmean(V1, k=120, fill=NA, align='right'))
 
 #because this takes too long with the raw data, taking every nth row and making new dataframe
-df.new <-  env[seq(1, nrow(env), 60), ] #This creates an index from row 1 to nrow (number of rows of the table) every 5 rows. You can play with the starting point and the 5 to extract other sequences.
+df.new <-  env[seq(1, nrow(env), 120), ] #This creates an index from row 1 to nrow (number of rows of the table) every 5 rows. You can play with the starting point and the 5 to extract other sequences.
 
 
 plot(df.new$V1, col = "blue", type = "l")
@@ -56,6 +56,8 @@ df.new$clust <- clust_df$cluster
 
 
 #plot results of clusters
+
+  
 ggplot() +
   geom_point(data = df.new, aes(x = time, y = V1, color = clust))
 

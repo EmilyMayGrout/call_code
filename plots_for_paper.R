@@ -1,5 +1,7 @@
 #this script is to make a table with each calls properties for the repertoire paper
 
+#LINE 123 FOR THE PERFECT PLOTS FOR THE PAPER (WHERE I CAN ADJUST THE SIZE OF THE AXIS LABELS WITH MTEXT)
+
 #spectrograms were saved with the export button to the plot_dir/spectrograms 600x600 size
 
 library(seewave)
@@ -18,51 +20,51 @@ jet.colors4 <- colorRampPalette(c("white","plum2","deeppink4", "blue2"))
 
 #load in each example call type to describe in paper
 #AGGRESIVE
-growl <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/growl cut.wav')
-squeal <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/squeal_down.wav')
-squeal_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/squeal grunt.wav')
-chittering <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chittering.wav')
-long_chitter <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/long chitter.wav')
+growl <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/growl cut.wav')
+squeal <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/squeal_down.wav')
+squeal_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/squeal grunt.wav')
+chittering <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chittering.wav')
+long_chitter <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/long chitter.wav')
 
 #CONTACT
-chirp_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpgrunt_cut.wav')
-chirp_click_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpclickgrunt2.wav')
-chirp_grunt_snort <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirpgruntsnort.wav')#from file 3 6887 edic mini
-grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/grunt.wav') #from 9480_1_FL8
-clicks <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/clicks.wav') ##from Chris Hass Ramsey Canyon Coatis video
-chirp2 <-readWave('F:/PhD/All things coati/Edic mini calls/each call type/chirp2.wav') #from 9480_1_FL3
+chirp_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chirpgrunt_cut.wav')
+chirp_click_grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chirpclickgrunt2.wav')
+chirp_grunt_snort <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chirpgruntsnort.wav')#from file 3 6887 edic mini
+grunt <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/grunt.wav') #from 9480_1_FL8
+clicks <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/clicks.wav') ##from Chris Hass Ramsey Canyon Coatis video
+chirp2 <-readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chirp2.wav') #from 9480_1_FL3
 
 
 #AGGRESSIVE CALL SEQUENCES
-agg_seq4 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence4.wav')
-agg_seq5 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence5.wav')
-agg_seq6 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/aggsequence6.wav')
+agg_seq4 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/aggsequence4.wav')
+agg_seq5 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/aggsequence5.wav')
+agg_seq6 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/aggsequence6.wav')
 
 #ALARM
-chop_chop <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/chop chop.wav') 
-barking <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barking.wav') #from Chris Hass Ramsey Canyon Coatis video
-bark <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/barkcomplex.wav') #from Chris Hass Ramsey Canyon Coatis video
+chop_chop <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chop chop.wav') 
+barking <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/barking.wav') #from Chris Hass Ramsey Canyon Coatis video
+bark <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/barkcomplex.wav') #from Chris Hass Ramsey Canyon Coatis video
 
 #MATING
-dolphin_call <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/dolphin call2.wav') #call comes from Galaxy 9463_2_FL1
+dolphin_call <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/dolphin call2.wav') #call comes from Galaxy 9463_2_FL1
 
 #SHORT CALLS - UNK FUNCTION
-bop <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/bop.wav') #call comes from 9471_1_FL4 
+bop <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/bop.wav') #call comes from 9471_1_FL4 
 
 #MECHANICAL SOUNDS - UNK FUNCTION
-snorts <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/snorts.wav') ##from file 3 6887 edic mini
+snorts <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/snorts.wav') ##from file 3 6887 edic mini
 
 #SLEEP SOUNDS
-snore_hum <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/snore.wav') #from 9480_1_FL8
-hum <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/sleephum.wav') #from 9480_1_FL8
+snore_hum <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/snore.wav') #from 9480_1_FL8
+hum <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/sleephum.wav') #from 9480_1_FL8
 
 #BABY COATI SOUNDS
-baby_coati <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babycoati.wav') #from Lydia's whatsapp recordings
-baby_chitters <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babychitters.wav') #from Chris recordings
-baby_mews <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babymews.wav') #from Chris recordings
-baby_purr <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babypurr.wav') #from Chris recordings
-baby_whines <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babywhines.wav') #from Chris recordings
-baby_whistle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/babywhistle.wav') #from Chris recordings
+baby_coati <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/babycoati.wav') #from Lydia's whatsapp recordings
+baby_chitters <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/babychitters.wav') #from Chris recordings
+baby_mews <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/babymews.wav') #from Chris recordings
+baby_purr <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/babypurr.wav') #from Chris recordings
+baby_whines <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/babywhines.wav') #from Chris recordings
+baby_whistle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/babywhistle.wav') #from Chris recordings
 
 
 #plot amplitude envelope
@@ -119,7 +121,23 @@ squeal_all <- prop2
 #----------SQUEAL GRUNT--------------
 spectro(squeal_grunt,f=22050,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-50,0), grid = F, heights = 2.1, main = "squeal grunt")
 cutsqueal_grunt1 <- cutw(squeal_grunt,f=22050,from=0.55, to = 0.7 ,plot=T)
-spectro(cutsqueal_grunt1,f=22050,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-50,0), grid = F)
+
+###THIS PLOT HAS LARGER AXIS LABELS IN THE CORRECT PLACE AND NOW I NEXT NEED TO MAKE A SPECTROGRAM USING THE SAME CODE FROM BELOW:
+
+png(height = 1000, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/spectrograms/test.png")
+par(mgp=c(3,2.5,0))
+spectro(cutsqueal_grunt1,f=22050,ovlp=85,zp=16, palette=jet.colors, osc=T, collevels=seq(-50,0), grid = F, cexlab = 4, cexaxis = 4, scalecexlab = 3, oma = rep(6,4), 
+        tlab = " ",
+        flab = " ",
+        alab = " ")
+#this doesn't work for rotating: mtext("bla", side = 2, line = 1, outer = FALSE, adj = 5, at = c(1.5,2)) # side: (1=bottom, 2=left, 3=top, 4=right)
+#just adding call name to title
+mtext("Squeal grunt", side = 1, line = -55, cex = 4)
+mtext("Time (s)", side = 3, line = -74, cex = 4, las = 1)
+mtext("Frequency (kHz)", side = 2, line = 6, cex = 4, las = 3)
+mtext("Amplitude", side = 2, line = 6, cex = 3, las = 3, at = -1.5)
+
+dev.off()
 
 cutsqueal_grunt <- cutw(squeal_grunt,f=22050,from=0.6, to = 0.7 ,plot=T)
 spectro(cutsqueal_grunt,f=22050,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-50,0), grid = F)

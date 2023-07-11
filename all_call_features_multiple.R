@@ -1,13 +1,17 @@
-#this script is getting the acoustic features for multiple examples of the same call type to get the sandard error ect.
+#this script is getting the acoustic features for multiple examples of the same call type to get the standard error ect.
 
 library(seewave)
 library(tuneR)
 library(ggplot2)
 library(DT)
 library(plyr)
+library(vioplot)
+library(RColorBrewer)
 
 #colour palette for spectrogram
 jet.colors <- colorRampPalette(c("white","white", "seashell","seashell1", "plum1", "deeppink4", "darkblue", "black"))
+
+plot.colors <- brewer.pal(n = 11, name = "Paired")
 
 #list of features to keep
 keep <- c("mode", "median", "sh", "Q25", "Q75","IQR", "skewness", "kurtosis", "cent", "sfm")
@@ -460,20 +464,17 @@ for (i in 1:nrow(stand_dev)){
 stand_dev2 <- stand_dev[,c("name","duration", "dom_freq", "sh", "sfm", "Q25", "Q75", "IQR")]
 stand_dev2 <- stand_dev2 %>% arrange(factor(name, levels = c("chirp", "click", "grunt", "chitter", "squeal", "growl", "bark", "dc", "hum", "vibrate" )))
 
-
-
-
 #colnames(filt2)[colnames(filt2) == "mode"] <- "Dominant Frequency (Hz)"
 
 write.table(stand_dev2,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions3.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
 
+#want to make a violin plot for the duration of calls for each call type
 
-
-
-
-
-
-
+dur_df <- prop[,c("duration", "name")]
+png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/durations.png")
+par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
+boxplot(dur_df$duration ~dur_df$name, ylab = "", xlab = "Call Duration (s)",col = plot.colors, method = "jitter", vertical = F, pch = 1, las = 1, horizontal = TRUE, cex.axis = 3, cex.lab = 3)
+dev.off()
 
 
 

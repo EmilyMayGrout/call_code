@@ -11,6 +11,8 @@ library(hms)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(RColorBrewer)
+library(ggthemes)
 
 # get a list of all the CSV files in the folder
 files <- list.files(wd, pattern = "*.csv")
@@ -105,12 +107,14 @@ all_data_cleaned[all_data_cleaned == "nf chitter x"] <- "nf chitter"
 all_data_cleaned[all_data_cleaned == "chitter x "] <- "chitter"
 all_data_cleaned[all_data_cleaned == "chitter x"] <- "chitter"
 all_data_cleaned[all_data_cleaned == "bob"] <- "bop"
-all_data_cleaned[all_data_cleaned == "chirpgr x"] <- "chirpgr"
-all_data_cleaned[all_data_cleaned == "chirpgr "] <- "chirpgr"
+all_data_cleaned[all_data_cleaned == "chirpgr x"] <- "chirp grunt"
+all_data_cleaned[all_data_cleaned == "chirpgr "] <- "chirp grunt"
+all_data_cleaned[all_data_cleaned == "chirpgr"] <- "chirp grunt"
 all_data_cleaned[all_data_cleaned == "low peep"] <- "peep"
 all_data_cleaned[all_data_cleaned == "chirp click "] <- "chirp click"
-all_data_cleaned[all_data_cleaned == "chirpr"] <- "chirpgr"
-all_data_cleaned[all_data_cleaned == "squeal chitters"] <- "squeal chitter"
+all_data_cleaned[all_data_cleaned == "chirpr"] <- "chirp grunt"
+all_data_cleaned[all_data_cleaned == "squeal chitters"] <- "squeal chittering"
+all_data_cleaned[all_data_cleaned == "squeal chitter"] <- "squeal chittering"
 
 
 unique(all_data_cleaned$label)
@@ -118,6 +122,17 @@ unique(all_data_cleaned$label)
 table(all_data_cleaned$label)
 
 cleaned <- all_data_cleaned
+
+#remove calls which are not described in the repertoire paper where the sample size is also super small
+
+cleaned <- cleaned[!grepl("chop chop", cleaned$label),]
+cleaned <- cleaned[!grepl("peep", cleaned$label),]
+cleaned <- cleaned[!grepl("purr", cleaned$label),]
+cleaned <- cleaned[!grepl("quack", cleaned$label),]
+cleaned <- cleaned[!grepl("snarl", cleaned$label),]
+cleaned <- cleaned[!grepl("squeal chittering", cleaned$label),]
+#cleaned[cleaned == "chirpgr"] <- "chirp grunt"
+
 
 #want to look at each individuals to get average number of calls for each call type
 #first need to split dataframe into list of dataframes for each ind
@@ -182,7 +197,7 @@ df_summary_count
 png(height = 700, width = 1000, units = 'px', filename = paste0(plot_dir, "summary_count.png"))
 ggplot(df_summary_count) +
   geom_bar(aes(x=call_type, y=mean), stat='identity', fill='steelblue2') +
-  geom_errorbar(aes(x=call_type, ymin=pmax(mean-sd,0), ymax=mean+sd), width=0.3, color='orange3') + theme_classic() +labs(x="Call type",y="Total call count")+ theme(text=element_text(size=30))+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  geom_errorbar(aes(x=call_type, ymin=pmax(mean-sd,0), ymax=mean+sd), width=0.3, color='orange3') + theme_classic() +labs(x="Call type",y="Total call count")+ theme(text=element_text(size=30))+ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 # Also for call RATES --------------------------------------------
@@ -207,7 +222,7 @@ df_summary_rate
 png(height = 700, width = 1000, units = 'px', filename = paste0(plot_dir, "summary_rates.png"))
 ggplot(df_summary_rate) +
   geom_bar(aes(x=call_type, y=mean), stat='identity', fill='steelblue') +
-  geom_errorbar(aes(x=call_type, ymin=pmax(mean-sd,0), ymax=mean+sd), width=0.3, color='orange4') + theme_classic() +labs(x="Call type",y="Call rate")+ theme(text=element_text(size=30))+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  geom_errorbar(aes(x=call_type, ymin=pmax(mean-sd,0), ymax=mean+sd), width=0.3, color='orange4') + theme_classic() +labs(x="Call type",y="Call rate (per hour)")+ theme(text=element_text(size=30))+ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 #I also want a plot for the call counts based on age/sex rank - do adults call more than subadults ect.
@@ -240,11 +255,19 @@ newtable <- newtable[, c(1:6, 9,10)]
 
 #now want to plot the distributions of call counts and call rates for each age_sex class....
 
+
+Spectral_edit <- c("#9E0142", "#D53E4F", "#F46D43", "#FDAE61", "#FEE08B", "#FFFFBF", "#E6F598", "#ABDDA4", "#66C2A5", "#3288BD", "#5E4FA2")
+
+Paired_edit <- c("#A6CEE3", "#1F78B4", "#A2CD5A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", "#CDB5CD", "#8B4789", "#00868B")
+Paired_5 <- c("#CDB5CD", "#A2CD5A","#E31A1C", "#FF7F00",  "#00868B")
+
+
+
 #filter to only chirp, chirpgrunt, chitter and squeal
 
 newtable_filt <- newtable
 unique(newtable$label)
-newtable_filt <- newtable[newtable$label %in% c("chirpgr", "chirp", "chitter", "squeal", "dc"), ]
+newtable_filt <- newtable[newtable$label %in% c("chirp grunt", "chirp", "chitter", "squeal", "dc", "bark"), ]
 
 # Number of calls in each class for each ind:
 #ggplot(newtable_filt, aes(label)) + geom_bar(aes(fill = name.y), position="dodge")  #+ facet_wrap(vars(id), ncol = 3)
@@ -252,15 +275,42 @@ newtable_filt <- newtable[newtable$label %in% c("chirpgr", "chirp", "chitter", "
 # Number of calls in each class for each age/sex class:
 png(height = 1200, width = 2000, units = 'px', filename = paste0(plot_dir, "summary_counts_agesex.png"))
 
-ggplot(newtable_filt, aes(label)) + geom_bar(aes(fill = name.y), position="dodge") + facet_wrap(vars(age_sex.y), ncol = 3) +theme_classic()+ scale_fill_brewer(palette="Spectral")  +labs(x="Call type",y="Call count")+labs(fill="name")+ theme(text=element_text(size=40))
-
+ggplot(newtable_filt, aes(label)) + geom_bar(aes(fill = name.y), position="dodge") + facet_wrap(vars(age_sex.y), ncol = 3) +theme_classic() + scale_fill_manual(values=Paired_edit) + labs(x="Call type",y="Call count") + labs(fill="name") + theme(text=element_text(size=40), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
+
+
+png(height = 1200, width = 2000, units = 'px', filename = paste0(plot_dir, "summary_counts_agesex_odd.png"))
+ggplot(newtable_filt, aes(label, width=.25)) + 
+  geom_bar(aes(fill = name.y, color = name.y),
+           alpha = 0.5, position="dodge", size = 1.5) + 
+  facet_wrap(vars(age_sex.y), ncol = 3) +
+  #theme_classic() + 
+  theme_clean() +
+  scale_fill_manual(values=Paired_edit, aesthetics = c("color", "fill")) + 
+  labs(x="Call type",y="Call count", fill = "name", color = "name") +
+  theme(panel.grid.major.x = element_line(color = "gray", 
+                                          linetype = "dotted"),
+        panel.grid.major.y = element_blank(),
+        axis.text=element_text(size=40),
+        strip.text = element_text(size = 40),
+        legend.title = element_text(size = 40),
+        legend.text = element_text(size = 40),
+        legend.position = "right",
+        legend.background = element_rect(color = NA),
+        axis.title=element_text(size = 40),
+        axis.text.x = element_text(angle = 45, 
+                                   vjust = 1, 
+                                   hjust=1),)
+dev.off()
+
+
+
 
 
 #put the call counts in one graph with different colours for age/sex class
 png(height = 700, width = 1200, units = 'px', filename = paste0(plot_dir, "summary_counts_agesex_combo.png"))
 
-ggplot(newtable_filt, aes(label)) + geom_bar(aes(fill = age_sex.y), position="dodge")  +theme_classic()+ scale_fill_brewer(palette="Spectral")  +labs(x="Call type",y="Call count")+labs(fill="name")+ theme(text=element_text(size=30))
+ggplot(newtable_filt, aes(label)) + geom_bar(aes(fill = age_sex.y), position="dodge")  +theme_classic()+ scale_fill_manual(values=Paired_5)  +labs(x="Call type",y="Call count")+labs(fill="name")+ theme(text=element_text(size=30), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 dev.off()
 
@@ -278,18 +328,18 @@ dev.off()
 call_rates_class <- merge(call_rates_long, ids, by  = "id")
 
 #filter to calls interested in plotting
-call_rates_class_filt <- call_rates_class[call_rates_class$call_type %in% c("chirpgr", "chirp","chirp click", "chitter", "squeal", "dc"), ]
+call_rates_class_filt <- call_rates_class[call_rates_class$call_type %in% c("chirp grunt", "chirp","chirp click", "chitter", "squeal", "dc", "bark"), ]
 
 png(height = 1000, width = 1400, units = 'px', filename = paste0(plot_dir, "summary_rate_agesex.png"))
 
-ggplot(call_rates_class_filt, aes(x = call_type, y = rate))+ geom_col(aes(fill = name), position="dodge")+ facet_wrap(vars(age_sex))+theme_classic()+ scale_fill_brewer(palette="Spectral")  +labs(x="Call type",y="Call rate")+labs(fill="name")+ theme(text=element_text(size=30))+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+ggplot(call_rates_class_filt, aes(x = call_type, y = rate))+ geom_col(aes(fill = name), position="dodge")+ facet_wrap(vars(age_sex))+theme_classic()+ scale_fill_manual(values=Paired_edit)  +labs(x="Call type",y="Call rate (per hour)")+labs(fill="name")+ theme(text=element_text(size=30), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 dev.off()
 
 
 png(height = 700, width = 1100, units = 'px', filename = paste0(plot_dir, "summary_rate_agesex_combo.png"))
 
-ggplot(call_rates_class_filt, aes(x = call_type, y = rate))+ geom_col(aes(fill = age_sex), position="dodge")+theme_classic()+ scale_fill_brewer(palette="Spectral")  +labs(x="Call type",y="Call rate")+labs(fill="name")+ theme(text=element_text(size=30))
+ggplot(call_rates_class_filt, aes(x = call_type, y = rate))+ geom_col(aes(fill = age_sex), position="dodge")+theme_classic()+ scale_fill_manual(values=Paired_5)  +labs(x="Call type",y="Call rate (per hour)")+labs(fill="name")+ theme(text=element_text(size=30), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 dev.off()
 
