@@ -1,5 +1,8 @@
 #this script is getting the acoustic features for multiple examples of the same call type to get the standard error ect.
 
+#TODO: add chopchop, roar, snort, squawk, squeak
+
+
 library(seewave)
 library(tuneR)
 library(ggplot2)
@@ -36,6 +39,9 @@ keep <- c("mode", "median", "sh", "Q25", "Q75","IQR", "skewness", "kurtosis", "c
 # shannon entropy - The Shannon spectral entropy of a noisy signal will tend towards 1 whereas the Shannon spectral entropy of a pure tone signal will tend towards 0
 
 #ACI - computes the variability of the intensities registered in audio-recordings
+
+
+#growl
 
 #directory
 dir <- "F:/PhD/All things coati/Edic mini calls/each call type/growl/"
@@ -339,6 +345,8 @@ for (i in 1:length(lwf)) {
 
 #bark
 
+
+
 dir <- "F:/PhD/All things coati/Edic mini calls/each call type/bark/"
 filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
 all_names = basename(filenames)
@@ -353,6 +361,11 @@ for (i in 1:length(lwf)) {
   dat2 <- subset(dat2, y != 1)
   #exclude rows where x is 0
   dat2 <- subset(dat2, x != 0)
+  
+  #might need to filter off the lower frequencies as the bark call dom freq is at around 4-5kHz 
+  #excluding values less than 1kHz - but this might not be a good idea as some of the barks have a grunt at the same time (but they either bark or bark grunt, so filtering for the grunt would then allow us to only see the features of the bark)
+  dat2 <- subset(dat2, x > 1)
+
   #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
   dom_freq <- dat2[dat2$y == max(dat2$y), 1]
   prop9 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
@@ -406,7 +419,7 @@ for (i in 1:length(lwf)) {
   
 }
 
-
+#*****************#### need to add chopchop, roar, snort, squawk, squeak************************
 
 
 #this works, now need to think about what other features should be extracted
@@ -459,9 +472,9 @@ for (i in 1:nrow(stand_dev)){
 }
 
 
-
 #remove columns not wanted in paper and reordering call types
 stand_dev2 <- stand_dev[,c("name","duration", "dom_freq", "sh", "sfm", "Q25", "Q75", "IQR")]
+#manually order the table by name
 stand_dev2 <- stand_dev2 %>% arrange(factor(name, levels = c("chirp", "click", "grunt", "chitter", "squeal", "growl", "bark", "dc", "hum", "vibrate" )))
 
 #colnames(filt2)[colnames(filt2) == "mode"] <- "Dominant Frequency (Hz)"
@@ -475,6 +488,8 @@ png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbo
 par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
 boxplot(dur_df$duration ~dur_df$name, ylab = "", xlab = "Call Duration (s)",col = plot.colors, method = "jitter", vertical = F, pch = 1, las = 1, horizontal = TRUE, cex.axis = 3, cex.lab = 3)
 dev.off()
+
+
 
 
 
