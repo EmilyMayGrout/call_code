@@ -595,6 +595,7 @@ for (i in 1:length(lwf)) {
 #visualising spectral properties between call types
 boxplot(dom_freq ~ name, prop)   
 boxplot(sfm ~ name, prop)   
+boxplot(kurtosis ~ name, prop)   
 
 
 #--------------------------------------------------------------------------
@@ -664,6 +665,7 @@ par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
 boxplot(dur_df$dom_freq ~dur_df$name, ylab = "", xlab = "Dominant Frequency (Hz)",col = plot.colors, method = "jitter", vertical = F, pch = 1, las = 1, horizontal = TRUE, cex.axis = 3, cex.lab = 3)
 dev.off()
 
+#can see that the lower frequency calls have longer durations!
 
 
 
