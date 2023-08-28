@@ -419,7 +419,175 @@ for (i in 1:length(lwf)) {
   
 }
 
-#*****************#### need to add chopchop, roar, snort, squawk, squeak************************
+#chopchop
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/chopchop/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop11 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop11 <- prop11[, keep] 
+  prop11$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop11$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop11$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop11$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop11$name <- "chop chop"
+  prop11$file <- all_names[i]
+  prop11$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop11)
+  
+}
+
+#roar
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/roar/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop12 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop12 <- prop12[, keep] 
+  prop12$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop12$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop12$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop12$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop12$name <- "roar"
+  prop12$file <- all_names[i]
+  prop12$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop12)
+  
+}
+
+#snort
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/snort/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop13 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop13 <- prop13[, keep] 
+  prop13$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop13$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop13$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop13$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop13$name <- "snort"
+  prop13$file <- all_names[i]
+  prop13$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop13)
+  
+}
+
+#squawk
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/squawk/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop14 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop14 <- prop14[, keep] 
+  prop14$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop14$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop14$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop14$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop14$name <- "squawk"
+  prop14$file <- all_names[i]
+  prop14$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop14)
+  
+}
+
+#squeak
+
+dir <- "F:/PhD/All things coati/Edic mini calls/each call type/squeak/"
+filenames <- list.files(dir, pattern=".wav", full.names=TRUE)
+all_names = basename(filenames)
+lwf <- lapply(filenames, readWave)
+
+for (i in 1:length(lwf)) {
+  #spectro(lwf[[i]],f=lwf[[i]]@samp.rate,ovlp=85,zp=16, palette=jet.colors, osc=TRUE, collevels=seq(-29,0), grid = F)
+  f = lwf[[i]]@samp.rate
+  dat <- meanspec(lwf[[i]],f=lwf[[i]]@samp.rate , plot=F)
+  dat2 <- as.data.frame(dat)
+  #excluding rows where y is 1.0000
+  dat2 <- subset(dat2, y != 1)
+  #exclude rows where x is 0
+  dat2 <- subset(dat2, x != 0)
+  #dominant frequency is the frequency of max amplitude, which is x for the max of y in chirp_dat2
+  dom_freq <- dat2[dat2$y == max(dat2$y), 1]
+  prop15 <- as.data.frame(specprop(dat,f=lwf[[i]]@samp.rate))
+  prop15 <- prop15[, keep] 
+  prop15$dom_freq <- dom_freq*1000
+  #Acoustic complexity index
+  #prop15$ACI <- ACI(lwf[[i]], channel = 1, wl = 512, ovlp = 0,  wn = "hamming", flim = NULL, nbwindows = 1)
+  #Entropy
+  prop15$entropy <- H(lwf[[i]], lwf[[i]]@samp.rate, channel = 1, wl = 512, envt="hil", msmooth = NULL, ksmooth = NULL)
+  prop15$duration <- duration(lwf[[i]], lwf[[i]]@samp.rate, channel=1)
+  prop15$name <- "squeak"
+  prop15$file <- all_names[i]
+  prop15$sum_calls <- length(all_names)
+  
+  prop <- rbind(prop, prop15)
+  
+}
 
 
 #this works, now need to think about what other features should be extracted
@@ -487,6 +655,13 @@ dur_df <- prop[,c("duration", "name")]
 png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/durations.png")
 par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
 boxplot(dur_df$duration ~dur_df$name, ylab = "", xlab = "Call Duration (s)",col = plot.colors, method = "jitter", vertical = F, pch = 1, las = 1, horizontal = TRUE, cex.axis = 3, cex.lab = 3)
+dev.off()
+
+#make a violin plot for dominant frequency for each call type
+dur_df <- prop[,c("dom_freq", "name")]
+png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/dom_freq.png")
+par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
+boxplot(dur_df$dom_freq ~dur_df$name, ylab = "", xlab = "Dominant Frequency (Hz)",col = plot.colors, method = "jitter", vertical = F, pch = 1, las = 1, horizontal = TRUE, cex.axis = 3, cex.lab = 3)
 dev.off()
 
 
