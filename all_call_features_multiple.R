@@ -626,7 +626,12 @@ for (i in 1:nrow(stand_dev)){
     call_feature <- call_type[,j]
     mean_call_feature <- round(mean(call_feature), digits = 3)
     stand_dev_feature <- round(sd(call_feature), digits = 3)
-    stand_dev_feature <- paste("±", stand_dev_feature, sep = " ")
+    
+    #stand_dev_feature <- paste("±", stand_dev_feature, sep = " ")
+    #because the ± isn't recognised in excel, need to change to different digit for now
+    stand_dev_feature <- paste(":", stand_dev_feature, sep = " ")
+    
+    
     #joining the mean and sd to the same cell
     mean_sd <- paste(mean_call_feature, stand_dev_feature, sep = " ")
     #saving mean and standard deviation back into stand_dev dataframe
@@ -643,14 +648,16 @@ for (i in 1:nrow(stand_dev)){
 
 #remove columns not wanted in paper and reordering call types
 stand_dev2 <- stand_dev[,c("name","duration", "dom_freq", "sh", "sfm", "Q25", "Q75", "IQR")]
+
 #manually order the table by name
 stand_dev2 <- stand_dev2 %>% arrange(factor(name, levels = c("chirp", "click", "grunt", "chitter", "squeal", "growl", "bark", "dc", "hum", "vibrate" )))
 
 #colnames(filt2)[colnames(filt2) == "mode"] <- "Dominant Frequency (Hz)"
 
 write.table(stand_dev2,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions3.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
+write.table(stand_dev,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions2.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
 
-#want to make a violin plot for the duration of calls for each call type
+#make a violin plot for the duration of calls for each call type
 
 dur_df <- prop[,c("duration", "name")]
 png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/durations.png")
