@@ -80,8 +80,10 @@ Baby_whistle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type
 #more calls to make spectrograms
 Cackle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/cackle2.wav')
 Cut_cackle <- cutw(cackle,f=96000,from=0.1, to = 0.545 ,plot=T)
-Chuckle <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chuckles.wav')
-Cut_Chuckle <- cutw(chuckle,f=96000,from=0.1, to = 0.6 ,plot=T)
+Chuckle1 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chuckles.wav')
+Chuckle2 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chuckle2.wav')
+Chuckle3 <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chuckle3.wav')
+Cut_Chuckle <- cutw(Chuckle,f=96000,from=0.1, to = 0.6 ,plot=T)
 Excite <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/excitementchirps.wav')
 Cut_Excite <- cutw(excite,f=96000,from=0.1, to = 0.3 ,plot=T)
 Chirp <- readWave('F:/PhD/All things coati/Edic mini calls/each call type/all/chirpultra3_clipped.wav')
@@ -90,7 +92,7 @@ Chitter_Ultra <- readWave('F:/PhD/All things coati/Edic mini calls/each call typ
 
 #only have wave files wanted in the list in the global environemt
 waves <- Filter(function(x) is(x, "Wave"), mget(ls()))
-waves <- within(waves, rm("Excite", "Chuckle"))
+#waves <- within(waves, rm("Excite", "Chuckle"))
 
 for (i in 1:length(waves)){
 
