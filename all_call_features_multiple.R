@@ -627,8 +627,8 @@ for (i in 1:nrow(stand_dev)){
     mean_call_feature <- round(mean(call_feature), digits = 3)
     stand_dev_feature <- round(sd(call_feature), digits = 3)
     
-    #stand_dev_feature <- paste("±", stand_dev_feature, sep = " ")
-    #because the ± isn't recognised in excel, need to change to different digit for now
+    #stand_dev_feature <- paste("?", stand_dev_feature, sep = " ")
+    #because the ? isn't recognised in excel, need to change to different digit for now
     stand_dev_feature <- paste(":", stand_dev_feature, sep = " ")
     
     
@@ -657,7 +657,7 @@ stand_dev2 <- stand_dev2 %>% arrange(factor(name, levels = c("chirp", "click", "
 write.table(stand_dev2,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions3.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
 write.table(stand_dev,  file = "C:/Users/egrout/Dropbox/coaticalls/results/call_descriptions2.csv", quote = FALSE, sep ="\t" ,row.names = TRUE, col.names = TRUE)
 
-#make a violin plot for the duration of calls for each call type
+#make a box and whisker plot for the duration of calls for each call type
 
 dur_df <- prop[,c("duration", "name")]
 png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/durations.png")
@@ -665,7 +665,7 @@ par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
 boxplot(dur_df$duration ~dur_df$name, ylab = "", xlab = "Call Duration (s)",col = plot.colors, method = "jitter", vertical = F, pch = 1, las = 1, horizontal = TRUE, cex.axis = 3, cex.lab = 3)
 dev.off()
 
-#make a violin plot for dominant frequency for each call type
+#make a box and whisker plot for dominant frequency for each call type
 dur_df <- prop[,c("dom_freq", "name")]
 png(height = 900, width = 1200, units = 'px', filename = "C:/Users/egrout/Dropbox/coaticalls/results/dom_freq.png")
 par(mar = c(10,15,5,5), mgp=c(6,2.5,0)) #c(bottom, left, top, right)
@@ -674,8 +674,9 @@ dev.off()
 
 #can see that the lower frequency calls have longer durations!
 
+dur_dom <- prop[,c("duration", "name", "dom_freq")]
 
-
+plot(dur_dom$duration, dur_dom$dom_freq, )
 
 
 
