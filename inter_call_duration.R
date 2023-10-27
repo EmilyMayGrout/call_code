@@ -142,6 +142,20 @@ cleaned <- cleaned[!grepl("squeal chittering", cleaned$label),]
 #data_list <- split(cleaned, f = cleaned$id)  
 
 
+# #get the end time of the call - code not working yet
+# 
+# # Convert to hms
+# call_start_hms <- as_hms(cleaned$Start)
+# call_duration_hms <- as_hms(cleaned$Duration)
+# 
+# # Calculate end time
+# call_end_hms <- call_start_hms + call_duration_hms
+# 
+# # Convert back to character string
+# call_end_time <- as.character(call_end_hms)
+# 
+# 
+# cleaned$End <- cleaned$Start + cleaned$Duration
 
 cleaned_diff_time <- cleaned %>%
   arrange(file_name, label, Start) %>%
