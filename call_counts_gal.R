@@ -343,6 +343,22 @@ ggplot(call_rates_class_filt, aes(x = call_type, y = rate))+ geom_col(aes(fill =
 
 dev.off()
 
+#want to change order of this plot so it's in the long format and the x axis is call rate and y axis is call type
+
+ggplot(call_rates_class_filt, aes(x = rate, y = name))+ 
+  geom_point(aes(color = call_type)) +
+  scale_x_continuous(limits = c(0,250))+# panel spacing
+facet_grid(vars(age_sex), scales = "free", space = "free") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+#save call rates for each ind
+save(call_rates_class_filt, file = "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/coati_call_rates.Rda")
+#save as a csv file
+write.csv(call_rates_class_filt, "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/coati_call_rates.csv", row.names=FALSE, quote=FALSE) 
+
+
+#--------------------------------------------------------------------------------------------
 
 png(height = 700, width = 1100, units = 'px', filename = paste0(plot_dir, "summary_rate_agesex_combo.png"))
 
