@@ -1,6 +1,6 @@
 #this script is calculating the time between the rhythmic calls
 
-wd <- "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/completed_labels/"
+wd <- "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/completed_labels/labels_2022/"
 plot_dir <- "C:/Users/egrout/Dropbox/coaticalls/results/"
 
 setwd <- wd
