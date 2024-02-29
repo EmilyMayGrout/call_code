@@ -7,6 +7,16 @@ plot_dir <- "C:/Users/egrout/Dropbox/coaticalls/results/"
 
 setwd <- wd
 
+
+#read in events
+load('C:/Users/egrout/Dropbox/coatithon/coatithon_code/Split_mechanics/galaxy_manual_events_withinfo.RData')
+
+#create column for the distnace travelled for the larger subgroup
+fission_df$Distance_Larger_Group <- ifelse(fission_df$A_subgroup_size >= fission_df$B_subgroup_size, fission_df$A_during_disp, fission_df$B_during_disp)
+#create column for the distance travelled of the smaller subgroup
+fission_df$Distance_Smaller_Group <- ifelse(fission_df$A_subgroup_size >= fission_df$B_subgroup_size,fission_df$B_during_disp, fission_df$A_during_disp)
+
+
 #LIBRARIES
 library(stringr)
 library(hms)
@@ -80,14 +90,11 @@ all_data_hms <- rbind(t,s,v)
 #add as.POSIXct
 all_data_hms$datetime <- as.POSIXct(paste(all_data_hms$date, all_data_hms$time), format = "%Y-%m-%d %H:%M:%OS")
 
-write.csv(all_data_hms, "C:/Users/egrout/Dropbox/coaticalls/processed/all_data_hms.csv")
- 
-###TODO Make the code below automated for all fission events
+#write.csv(all_data_hms, "C:/Users/egrout/Dropbox/coaticalls/processed/all_data_hms.csv")
+
 
 #in case want to split by id for plotting
 #f1 <- all_data_hms %>% group_split(id)
-
-#this forloop will go through each individual, through each fission and fusion event and summarise the call rates for the most common call types before and after each event. This will be stored in a seperate dataframe BUT NEED TO THINK ABOUT HOW WE WANT TO STORE THIS INFO FOR FURTHER ANALYSIS
 
 #for now, to solve the time synch (though this needs correcting properly later) I'm adding 1 minute to all calls
 
@@ -97,97 +104,39 @@ all_data_hms$datetime_new <- ifelse(all_data_hms$label %in% c('fission', 'fusion
 
 all_data_hms$datetime_new <- as.POSIXct(all_data_hms$datetime_new)
 
-df_odd <- all_data_hms %>% 
-  mutate(ff_label = ifelse(label %in% c("fission", "fusion"), label, NA),
-         ff_label = ifelse(!is.na(ff_label), str_c(ff_label, as.character(datetime_new), sep = "_"), NA),
-         # removing incorrect fusion label (maybe go back later to correct, then remove below line)
-         ff_label = ifelse(ff_label == "fusion_2021-12-27 07:27:00", NA, ff_label)) 
-# %>% 
-#   group_by(id) %>% 
-#   mutate(ff_label = ifelse())
-  
+#combining the contact calls 
+all_data_hms$label[all_data_hms$label == "chirpgr"] <- "contact call"
+all_data_hms$label[all_data_hms$label == "chirp click"] <- "contact call"
+all_data_hms$label[all_data_hms$label == "click grunt"] <- "contact call"
+all_data_hms$label[all_data_hms$label == "click"] <- "contact call"
 
-# Identify the rows with fission fusion labels (non-NA in ff_label) and create intervals
-event_intervals <- df_odd %>%
-  filter(!is.na(ff_label)) %>%
-  mutate(
-    before_interval = interval(start = datetime_new - minutes(10), end = datetime_new),
-    after_interval = interval(start = datetime_new, end = datetime_new + minutes(10))
-  )
-
-# Initialize the ba_label column with NAs
-df_odd$ba_label <- NA_character_
-
-# Loop through event_intervals and classify each datetime in df
-for(i in 1:nrow(event_intervals)) {
-  df_odd <- df_odd %>% 
-    group_by(id) %>% 
-    mutate(ba_label = ifelse(datetime_new %within% event_intervals$before_interval[i], 
-                  "before", 
-                  ba_label),
-           ba_label = ifelse(datetime_new %within% event_intervals$after_interval[i], 
-                  "after", 
-                  ba_label)) %>% 
-    ungroup()
-}
-
-# Corrected function to update ff_label based on ba_label
-df_odd_new <- df_odd %>% 
-  mutate(updated_ff_label = NA_character_) # Initialize the column to store updated labels
-
-last_seen_label <- NA  # Variable to keep track of the last seen non-NA ff_label
-for (i in seq_along(df_odd_new$ff_label)) {
-  if (!is.na(df_odd_new$ff_label[i])) {
-    last_seen_label <- df_odd_new$ff_label[i]  # Update last seen label when a non-NA ff_label is found
-  }
-  
-  if (!is.na(df_odd_new$ba_label[i]) && !is.na(last_seen_label)) {
-    # Prepend "b_" or "a_" to the last seen label based on ba_label
-    df_odd_new$updated_ff_label[i] <- paste0(df_odd_new$ba_label[i], "_", last_seen_label)
-  }
-}
-
-# chack if this worked
-test <- df_odd_new %>% 
-  filter(!is.na(ba_label))
-
-# only making NAs for first before of first fission other wise it worked
-# need to change for loop to count the first fission
-sum(is.na(test$updated_ff_label))
-
-# plot
-df_odd_new %>% 
-  filter(!is.na(updated_ff_label),
-         label %in% c("chirp", "chirpgr", "chitter")) %>%
-  group_by(id, label, ba_label, updated_ff_label ) %>% 
-  summarise(freq = n()) %>% 
-  ggplot(aes(x = label, y = freq, color = ba_label, fill = ba_label),
-            ) +
-  geom_boxplot(outlier.shape = 3) +
-  geom_jitter(alpha = 0.2) +
-  facet_wrap(~id) +
-  theme_bw() 
+#combine aggressive calls
+all_data_hms$label[all_data_hms$label == "squeal"] <- "aggression call"
+all_data_hms$label[all_data_hms$label == "squeal chitter"] <- "aggression call"
+all_data_hms$label[all_data_hms$label == "squeal chitter x"] <- "aggression call"
+all_data_hms$label[all_data_hms$label == "squeal chitters"] <- "aggression call"
+all_data_hms$label[all_data_hms$label == "chitter x"] <- "aggression call"
 
 
 
 
 
+#create a data frame to hold output data: columns are fission time, ind id, chirp grunt rate before, chirpgr rate after, chitter rate before, chitter after, etc.
+#df_out <- data.frame(time = NA, ind = NA, fis_or_fus = NA, chirp_bef = NA, chirp_aft = NA, chirpgr_bef = NA, chirpgr_aft = NA, chitter_bef = NA, chitter_aft = NA) #fake first row might be necessary
 
-#create a data frame to hold output data: columns are fission time, ind id, chirp grunt rate befre, chirpgr rate after, chitter rate before, chitter after, etc.
-#df_out <- data.frame()
-#df_out <- data.frame(time = NA, ind = NA, fis_or_fus = , etc. ) #fake first row might be necessary
-i = 1
-j = 2
-n = 5
+df_out <- data.frame()
+# i = 1
+# j = 2
+# n = 5
+
 for (i in unique(all_data_hms$id)){
-  #curr_ind <- i #your current individual is i
-  
-  #extract each individual
-  ind_i <- all_data_hms[all_data_hms$id == unique(all_data_hms$id)[i],]
+
+  #extract each individuals data for all days
+  ind_i <- all_data_hms[all_data_hms$id == i,]
   
   #for loop through each day
-  for (j in 1:unique(ind_i$date)){
-    day_j <- ind_i[ind_i$date == unique(ind_i$date)[j],]
+  for (j in unique(ind_i$date)){
+    day_j <- ind_i[ind_i$date == as.Date(j),]
     
     for (n in 1:nrow(day_j)){
       #go through each row of dataframe, if the label is "fission", then extract all labels 15 mins before and after that row number to get a table of call counts
@@ -197,37 +146,159 @@ for (i in unique(all_data_hms$id)){
         
         #if the row is a fission, get the time of that fission, then get the time of calls 15 mins before and 15 mins after
         fis_time <- day_j$datetime_new[n]
-        first_time <- fis_time - lubridate::seconds(900) #15 mins
-        last_time <-  fis_time + lubridate::seconds(900)
+        time <- lubridate::seconds(900) #15 mins
+        first_time <- fis_time - time
+        last_time <-  fis_time + time
         
         labels_bef <- day_j[day_j$datetime_new >= first_time & day_j$datetime_new <= fis_time,]
         labels_aft <-day_j[day_j$datetime_new >= fis_time & day_j$datetime_new <= last_time,]
         
         #get the number of each type of call before
-        #get the time elapsed (fis_time - first_time)
-        #divide to get the call rate for each type of call
-        #same for after
+        label_count_bef <- data.frame(table(labels_bef$label))
+        label_count_bef$rate <- (label_count_bef$Freq)/(as.numeric(time)/60) #rate in mins
+      
+        #get the number of each type of call after
+        label_count_aft <- data.frame(table(labels_aft$label))
+        label_count_aft$rate <- (label_count_aft$Freq)/(as.numeric(time)/60) #rate in mins
         
         #create a row of your data frame above and append it using rbind
-        # row <- data.frame(time = fis_time, ind = i, fis_or_fus = row_n, chirp_bef = ,etc.)
-        # df_out <- rbind(df_out, row) #bind the row to the current data frame
+        row <- data.frame(time = fis_time, ind = i, fis_or_fus = row_n, contact_call_aft = NA, contact_call_bef = NA, aggression_call_aft = NA, aggression_call_bef = NA)
         
+       #for loop to extract the call rates for the calls we're interested in:
+        for(f_call in c("contact call", "aggression call")){
+          rate_aft <- label_count_aft$rate[label_count_aft$Var1==f_call]
+          rate_bef <- label_count_bef$rate[label_count_bef$Var1==f_call]
         
-        data.frame(table(labels_bef$label))
+          row[, paste0(f_call, "_aft")] <- rate_aft
+          row[, paste0(f_call, "_bef")] <- rate_bef
+      }
+        df_out <- rbind(df_out, row) #bind the row to the current data frame
         
       }
-      
-        
         else{NULL} #not needed probably
   }
  }
 }
     
-    
-    
-    
-    
 
+
+#for plotting will pivot this table longer and remove some of the columns
+df_out_filt <- df_out[,c(1,2,3,19:22)]
+
+#pivot longer
+df_out_long <- df_out_filt %>%
+  pivot_longer(!c(time, ind, fis_or_fus.label), names_to = "call", values_to = "rate")
+#replace NA with 0
+df_out_long[is.na(df_out_long)] <- 0
+
+#make column for before and after
+df_out_long[c('call', 'bef_aft')] <- str_split_fixed(df_out_long$call, '_', 2)
+
+#write name of bef and aft longer
+df_out_long$bef_aft[df_out_long$bef_aft == "bef"] <- "Before"
+df_out_long$bef_aft[df_out_long$bef_aft == "aft"] <- "After"
+
+
+#change factor levels so before is shown before after in plot
+df_out_long$bef_aft <- factor(df_out_long$bef_aft, levels = c("Before", "After"))
+
+g <- ggplot(data = df_out_long[df_out_long$fis_or_fus.label == "fusion",], aes(x = call, y = rate))+
+  geom_boxplot(aes(fill = bef_aft))+ 
+  geom_point(position=position_jitterdodge(), size = 0.5, color = "gray3", aes(fill=bef_aft, alpha = 0.8))+
+  scale_fill_manual(values=c("indianred1", "indianred4"))+
+  theme(legend.title=element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.text=element_text(size=14), axis.title = element_text(size = 14), legend.text = element_text(size = 14))+ 
+  xlab(" ") +
+  ylab("Call rate (per minute)")+
+  scale_alpha(guide = 'none')#+
+  #facet_wrap(~time)
+g
+
+
+#for fissions: "darkolivegreen2", "darkolivegreen"
+#for fusions: "indianred1", "indianred4"
+
+
+ggsave(paste0(plot_dir, "fusion_all.png"), g)
+
+#---------------------------------------------------------------------------------------------------
+
+#look at call rates of individuals who are the "leavers"
+
+#the dates we have labels for
+unique(df_out_filt$UTC_time)
+
+#need to put events df and df_out_filt df on same time zone
+df_out_filt$UTC_time <- df_out_filt$time + 5*60*60 # add 5 hours
+#filter for events that we have call rates results for
+events_filt <- events[events$datetime %in% unique(df_out_filt$UTC_time), ]
+
+colnames(events_filt)
+#remove some column that are unnecessary 
+events_filt <- events_filt[,c(2,3,4,5,6,9,10,12,14,15,20,21,22)]
+
+#split calling behaviour by event
+#f1 <- df_out_filt %>% group_split(time)
+
+#look at one event for the calling rate of each group member and see if there's a relationship between which subgroup they were in
+#look at the first event: 28.12.21 11:55:00
+
+call_df_event_1 <- df_out_filt[df_out_filt$UTC_time == unique(df_out_filt$UTC_time)[1],]
+
+#get the first event
+events_filt_1 <- events_filt[events_filt$datetime %in% unique(df_out_filt$UTC_time)[[1]],]
+
+#I want to put each individual in group A and B into a dataframe where each ind is a row and they have another column for distance travelled and subgroup ID
+
+#extract the IDs from the list for event i to each row of a dataframe
+id_A <- data.frame(matrix(unlist(events_filt_1$group_A_idxs), ncol = length(events_filt_1$group_A_idxs)))
+#add column for distance travelled ect.
+id_A <- cbind(id_A, events_filt_1$n_A, events_filt_1$A_during_disp, events_filt_1$AB_before_disp, events_filt_1$datetime)
+colnames(id_A) <- c("id", "subgroup_size", "during_dist", "before_dist", "datetime")
+#do the same for group B
+id_B <- data.frame(matrix(unlist(events_filt_1$group_B_idxs), ncol = length(events_filt_1$group_B_idxs)))
+colnames(id_B) <- "id"
+id_B <- cbind(id_B, events_filt_1$n_B, events_filt_1$B_during_disp, events_filt_1$AB_before_disp, events_filt_1$datetime)
+colnames(id_B) <- c("id", "subgroup_size", "during_dist", "before_dist", "datetime")
+
+#rbind the dataframes
+
+event_1 <- rbind(id_A, id_B)
+
+#want to get the code for the individuals in the id column
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------------------------------
+
+#zero augmented gamma distribution regression model 
+library(brms)
+
+
+hist(df_out_long$rate)
+
+m1 <- brm(rate ~ bef_aft + fis_or_fus.label + (1|call) + (1|ind),
+          data = df_out_long,
+          family = hurdle_gamma,
+          control = list(adapt_delta = 0.99999,
+                         max_treedepth = 14),
+          chains = 4, iter = 1000, warmup = 500,
+          cores = 4, seed = 520, 
+          backend = "cmdstanr")
+
+
+
+
+#-------------------------------------------------------------------------------------------------------------------------
 #look at one fission event to see call rates of all individuals involved
 
 #fission event at 06:55 on the 28.12.21

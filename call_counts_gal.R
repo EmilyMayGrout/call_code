@@ -1,6 +1,6 @@
 #this script is reading in the call labels in the completed labels folder on OwnCloud and calculating call counts for each individual
 
-wd <- "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/completed_labels/"
+wd <- "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/completed_labels/labels_25.02.24/"
 plot_dir <- "C:/Users/egrout/Dropbox/coaticalls/results/"
 
 setwd <- wd
@@ -25,6 +25,8 @@ all_data <- data.frame(matrix(ncol = 8, nrow = 0))
 colnames(all_data) <- c("label","Start","Duration","Time","Format","Type","Description","file_name")
 
 # loop through each CSV file and add it to the dataframe
+i = 67
+
 for (i in 1:length(files)) {
   # read in the CSV data as a tibble
   # using header = TRUE assumes the first row of each CSV file is a header with column names
@@ -33,7 +35,8 @@ for (i in 1:length(files)) {
   # add a column with the row names (i.e. the name of the CSV file)
   file_data$file_name <- files[i]
   #only keeping necessary info of the file name
-  file_data$file_name <- str_sub(file_data$file_name,end=10)
+  file_data$file <- str_sub(file_data$file_name,end=11)
+  file_data$date <- str_sub(file_data$file_name, start = 13, end = 20)
   colnames(file_data)[colnames(file_data) == "Name"] <- "label"
   
   # add the data to the all_data dataframe
@@ -43,28 +46,48 @@ for (i in 1:length(files)) {
 #remove rows which contain the date 
 all_data <- all_data[!grepl(":", all_data$label),]
 
-
-#remove unnecessary rows
-all_data <- all_data[, -c(4:6)]
+#remove file_name column 
+all_data <- all_data[,-7]
 
 #add ID column
-all_data$id <- str_sub(all_data$file_name,end=4)
+all_data$id <- str_sub(all_data$file, end=5)
+
+#make date column in POSIXct
+all_data$date <- as.Date(sub("(..)$", "20\\1", all_data$date), "%d.%m.%Y")
+
+#make time column
+all_data$Start <- all_data$Start
+table(str_length(all_data$Start))
+
+#because the length of the time column is different due to some times less than an hour, need to split the data to get the times and then rbind them
+t <- filter(all_data, nchar(Start) == 8)
+t$time <- paste0("6:", t$Start)
+t$time <- as_hms(t$time)
+
+s <- filter(all_data, nchar(Start) == 9)
+s$time <- paste0("6:", s$Start)
+s$time <- as_hms(s$time)
+
+v <- filter(all_data, nchar(Start) == 11)
+v$time <- as_hms(as_hms(v$Start) + as_hms('6:00:00.000'))
+
+all_data_hms <- rbind(t,s,v)
+
+#add as.POSIXct
+all_data_hms$datetime <- as.POSIXct(paste(all_data_hms$date, all_data_hms$time), format = "%Y-%m-%d %H:%M:%OS")
 
 
-#remove rows where number of characters in string is 8 or less because can't convert these to time format (and not in the last hour for comparison)
-all_data <- all_data[(which(nchar(all_data$Start) > 9)),]
-
-#then need to convert the start time to a time format
-all_data$time <- as_hms(all_data$Start)
-
-#need remove rows which are below the 2 hours, only keeping last hour
-all_data <- all_data[(which(all_data$time > as.hms("02:00:00.000"))),]
+# #then need to convert the start time to a time format
+# all_data$time <- as_hms(all_data$Start)
+# 
+# #need remove rows which are below the 2 hours, only keeping last hour
+all_data_hms <- all_data_hms[(which(all_data_hms$time > as_hms("08:00:00.000"))),]
 
 #---------------------------------------------------------------------
 #now cleaning labels and removing labels which are not calls
-unique(all_data$label)
+unique(all_data_hms$label)
 #remove labels
-all_data_cleaned <- all_data
+all_data_cleaned <- all_data_hms
 
 #removing labels not interested in:
 all_data_cleaned <- all_data_cleaned[!grepl("unk", all_data_cleaned$label),]
@@ -94,30 +117,44 @@ all_data_cleaned <- all_data_cleaned[!grepl("forag", all_data_cleaned$label),]
 all_data_cleaned <- all_data_cleaned[!grepl("fart", all_data_cleaned$label),]
 all_data_cleaned <- all_data_cleaned[!grepl("buzz", all_data_cleaned$label),]
 all_data_cleaned <- all_data_cleaned[!grepl("howler", all_data_cleaned$label),]
+all_data_cleaned <- all_data_cleaned[!grepl("collar", all_data_cleaned$label),]
+all_data_cleaned <- all_data_cleaned[!grepl("start", all_data_cleaned$label),]
+all_data_cleaned <- all_data_cleaned[!grepl("stop", all_data_cleaned$label),]
 
 
 #remove nf calls
 all_data_cleaned <- all_data_cleaned[!grepl("nf", all_data_cleaned$label),]
 
 
+
 #cleaning call labels
-all_data_cleaned[all_data_cleaned == "chirp "] <- "chirp"
-all_data_cleaned[all_data_cleaned == "grnt"] <- "grunt"
-all_data_cleaned[all_data_cleaned == "gunt"] <- "grunt"
-all_data_cleaned[all_data_cleaned == "spueal"] <- "squeal"
-all_data_cleaned[all_data_cleaned == "nf chitter "] <- "nf chitter"
-all_data_cleaned[all_data_cleaned == "nf chitter x"] <- "nf chitter"
-all_data_cleaned[all_data_cleaned == "chitter x "] <- "chitter"
-all_data_cleaned[all_data_cleaned == "chitter x"] <- "chitter"
-all_data_cleaned[all_data_cleaned == "bob"] <- "bop"
-all_data_cleaned[all_data_cleaned == "chirpgr x"] <- "chirp grunt"
-all_data_cleaned[all_data_cleaned == "chirpgr "] <- "chirp grunt"
-all_data_cleaned[all_data_cleaned == "chirpgr"] <- "chirp grunt"
-all_data_cleaned[all_data_cleaned == "low peep"] <- "peep"
-all_data_cleaned[all_data_cleaned == "chirp click "] <- "chirp click"
-all_data_cleaned[all_data_cleaned == "chirpr"] <- "chirp grunt"
-all_data_cleaned[all_data_cleaned == "squeal chitters"] <- "squeal chittering"
-all_data_cleaned[all_data_cleaned == "squeal chitter"] <- "squeal chittering"
+all_data_cleaned$label[all_data_cleaned$label == "chirp "] <- "chirp"
+all_data_cleaned$label[all_data_cleaned$label == "chrip"] <- "chirp"
+all_data_cleaned$label[all_data_cleaned$label == "chirp x"] <- "chirp"
+all_data_cleaned$label[all_data_cleaned$label == "grnt"] <- "grunt"
+all_data_cleaned$label[all_data_cleaned$label == "gunt"] <- "grunt"
+all_data_cleaned$label[all_data_cleaned$label == "spueal"] <- "squeal"
+all_data_cleaned$label[all_data_cleaned$label == "nf chitter "] <- "nf chitter"
+all_data_cleaned$label[all_data_cleaned$label == "nf chitter x"] <- "nf chitter"
+all_data_cleaned$label[all_data_cleaned$label == "chitter x "] <- "chitter"
+all_data_cleaned$label[all_data_cleaned$label == "chitter x"] <- "chitter"
+all_data_cleaned$label[all_data_cleaned$label == "chitter "] <- "chitter"
+all_data_cleaned$label[all_data_cleaned$label == "dc x"] <- "dc"
+all_data_cleaned$label[all_data_cleaned$label == "bob"] <- "bop"
+all_data_cleaned$label[all_data_cleaned$label == "chirpgr x"] <- "chirp grunt"
+all_data_cleaned$label[all_data_cleaned$label == "chirpgr "] <- "chirp grunt"
+all_data_cleaned$label[all_data_cleaned$label == "chirpgr"] <- "chirp grunt"
+all_data_cleaned$label[all_data_cleaned$label == "low peep"] <- "peep"
+all_data_cleaned$label[all_data_cleaned$label == "chirp click "] <- "chirp click"
+all_data_cleaned$label[all_data_cleaned$label == "chirp cick"] <- "chirp click"
+all_data_cleaned$label[all_data_cleaned$label == "chirpr"] <- "chirp grunt"
+all_data_cleaned$label[all_data_cleaned$label == "chirgpr"] <- "chirp grunt"
+all_data_cleaned$label[all_data_cleaned$label == "click grnut"] <- "click grunt"
+all_data_cleaned$label[all_data_cleaned$label == "squeal chitters"] <- "squeal chittering"
+all_data_cleaned$label[all_data_cleaned$label == "squeal chitter"] <- "squeal chittering"
+all_data_cleaned$label[all_data_cleaned$label == "squeal chitter x"] <- "squeal chittering"
+all_data_cleaned$label[all_data_cleaned$label == "squeal chitter x"] <- "squeal chittering"
+all_data_cleaned$label[all_data_cleaned$label == "chitter squeal"] <- "squeal chittering"
 
 
 unique(all_data_cleaned$label)
@@ -152,9 +189,6 @@ colnames(call_rates) <- unique(cleaned$id)
 row.names(call_rates) <- unique(cleaned$label)
 
 
-
-
-
 #going through each individual
 for (i in 1:length(data_list)){
   
@@ -164,10 +198,9 @@ for (i in 1:length(data_list)){
   #going through each call type to get call rate per hour
   for (j in 1:length(unique(ind$label))){
     
-    
     call_type <- unique(ind$label)[j]
     call_count <- length(which(ind$label == call_type))
-    hours_labelled <- length(unique(ind$file_name))
+    hours_labelled <- length(unique(ind$date))
     call_rate <- call_count/hours_labelled
     call_rate <- round(call_rate, 2)
     #get reference location in table
@@ -176,6 +209,11 @@ for (i in 1:length(data_list)){
     
   }
 }
+
+
+#because we have more data than originally, eventually we want to get the hours_labelled as the duration between the start and the stop time for each day, but for now using the last hours
+
+
 #----------------------------------------------------------
 #now to make some plots!
 
@@ -241,6 +279,10 @@ dev.off()
 #read in coati ID dataframe
 coati_ids <- read.csv("C:/Users/egrout/Dropbox/coatithon/rawdata/2022/galaxy/metadata/coati_id.csv", header = F)
 
+#remove G from the collar ID column so I can merge with the age/sex class info
+cleaned$id <- sub('G', '', cleaned$id)
+
+
 #make a column for age_sex class
 coati_ids$age_sex <- paste(coati_ids$V3, coati_ids$V4, sep=" ")
 
@@ -257,8 +299,8 @@ cleaned$age_sex <- NA
 cleaned$name <- NA
 
 #merge the ids dataframe to the cleaned dataframe to add the age_sex column 
-newtable <- merge(cleaned,ids, by  = "id", all.x = T, all.y = T)
-newtable <- newtable[, c(1:6, 9,10)]
+newtable <- merge(cleaned, ids, by  = "id", all.x = T, all.y = T)
+#newtable <- newtable[, c(1:6, 9,10)]
 
 #now want to plot the distributions of call counts and call rates for each age_sex class....
 
@@ -282,7 +324,13 @@ newtable_filt <- newtable[newtable$label %in% c("chirp grunt", "chirp", "chitter
 # Number of calls in each class for each age/sex class:
 png(height = 1200, width = 2000, units = 'px', filename = paste0(plot_dir, "summary_counts_agesex.png"))
 
-ggplot(newtable_filt, aes(label)) + geom_bar(aes(fill = name.y), position="dodge") + facet_wrap(vars(age_sex.y), ncol = 3) +theme_classic() + scale_fill_manual(values=Paired_edit) + labs(x="Call type",y="Call count") + labs(fill="name") + theme(text=element_text(size=40), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+ggplot(newtable_filt, aes(label)) + 
+  geom_bar(aes(fill = name.y), position="dodge") + 
+  facet_wrap(vars(age_sex.y), ncol = 3) +theme_classic() + 
+  scale_fill_manual(values=Paired_edit) + 
+  labs(x="Call type",y="Call count") + 
+  labs(fill="name") + 
+  theme(text=element_text(size=40), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 dev.off()
 
 
@@ -332,6 +380,9 @@ dev.off()
 
 
 #add age_sex class to dataframe
+#remove G from the collar ID column so I can merge with the age/sex class info
+call_rates_long$id <- sub('G', '', call_rates_long$id)
+
 call_rates_class <- merge(call_rates_long, ids, by  = "id")
 
 #filter to calls interested in plotting
