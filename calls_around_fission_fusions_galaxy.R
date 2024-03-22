@@ -2,13 +2,13 @@
 
 #read in labels 
 
-wd <- "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/completed_labels/labels_25.02.24/"
+wd <- "C:/Users/egrout/Dropbox/coaticalls/Galaxy_labels/completed_labels/labels_cleaned_25.02.24/"
 plot_dir <- "C:/Users/egrout/Dropbox/coaticalls/results/"
 
 setwd <- wd
 
 #read in events - RData was made in split_mechanics_exploration 
-load('C:/Users/egrout/Dropbox/coatithon/coatithon_code/Split_mechanics/galaxy_manual_events_withinfo2.RData')
+load('C:/Users/egrout/Dropbox/coatithon/processed/split_analysis_processed/galaxy_manual_events_withinfo2.RData')
 
 #create column for the distnace travelled for the larger subgroup
 events$Distance_Larger_Group <- ifelse(events$A_subgroup_size >= events$B_subgroup_size, events$A_during_disp, events$B_during_disp)
@@ -17,7 +17,6 @@ events$Distance_Smaller_Group <- ifelse(events$A_subgroup_size >= events$B_subgr
 
 #read in coati IDs 
 load('C:/Users/egrout/Dropbox/coatithon/processed/2022/galaxy/galaxy_coati_ids.RData')
-
 
 
 #LIBRARIES
@@ -46,7 +45,7 @@ colnames(all_data) <- c("label","Start","Duration","Time","Format","Type","Descr
 for (i in 1:length(files)) {
   # read in the CSV data as a tibble
   # using header = TRUE assumes the first row of each CSV file is a header with column names
-  file_data <- read.csv(paste0(wd, files[i]), header = T, sep="\t")
+  file_data <- read.csv(paste0(wd, files[i]), header = T)
   
   # add a column with the row names (i.e. the name of the CSV file)
   file_data$file_name <- files[i]
@@ -107,6 +106,7 @@ all_data_hms$datetime_new <- as.POSIXct(all_data_hms$datetime_new)
 
 #combining the contact calls 
 all_data_hms$label[all_data_hms$label == "chirpgr"] <- "contact call"
+all_data_hms$label[all_data_hms$label == "chirp grunt"] <- "contact call"
 all_data_hms$label[all_data_hms$label == "chirp click"] <- "contact call"
 all_data_hms$label[all_data_hms$label == "click grunt"] <- "contact call"
 all_data_hms$label[all_data_hms$label == "click"] <- "contact call"
@@ -119,7 +119,9 @@ all_data_hms$label[all_data_hms$label == "squeal"] <- "aggression call"
 all_data_hms$label[all_data_hms$label == "squeal chitter"] <- "aggression call"
 all_data_hms$label[all_data_hms$label == "squeal chitter x"] <- "aggression call"
 all_data_hms$label[all_data_hms$label == "squeal chitters"] <- "aggression call"
+all_data_hms$label[all_data_hms$label == "low squeal"] <- "aggression call"
 all_data_hms$label[all_data_hms$label == "chitter x"] <- "aggression call"
+all_data_hms$label[all_data_hms$label == "squeal chittering"] <- "aggression call"
 
 #add coati names to column based on IDs
 all_data_hms$name[all_data_hms$id == "G9463"] <- "Estrella"
@@ -231,8 +233,9 @@ g <- ggplot(data = df_out_long[df_out_long$fis_or_fus.label == "fusion",], aes(x
   theme(legend.title=element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.text=element_text(size=14), axis.title = element_text(size = 14), legend.text = element_text(size = 14))+ 
   xlab(" ") +
   ylab("Call rate (per minute)")+
-  scale_alpha(guide = 'none')+
+  scale_alpha(guide = 'none')#+
   facet_wrap(~time)
+
 g
 
 
@@ -243,13 +246,19 @@ ggsave(paste0(plot_dir, "fusion_perevent_15mins.png"), width = 50, height = 20, 
 
 
 
+
+
 #look at one event to see who is vocal, then see if they moved or not
+one_event <- df_out_long[df_out_long$fis_or_fus.label == "fission",]
 
-one_event <- df_out_long[df_out_long$fis_or_fus.label == "fusion",]
+time <- "2021-12-28 06:55:00 CET"
+#time <- "2022-01-04 07:02:00 CET"
+#time <- "2022-01-02 06:43:00 CET"
+#time <- "2021-12-28 07:29:00 CET"
 
-g <- ggplot(data = one_event[one_event$time == "2021-12-28 08:01:00 CET",], aes(x = call, y = rate, color = bef_aft))+ 
+g <- ggplot(data = one_event[one_event$time == time,], aes(x = call, y = rate, color = bef_aft))+ 
   geom_point(size = 5) +
-  scale_colour_manual(breaks = one_event[one_event$time == "2021-12-28 08:01:00 CET",]$bef_aft, values = c("indianred1", "indianred4"))+
+  scale_colour_manual(breaks = one_event[one_event$time == time,]$bef_aft, values = c("darkolivegreen2", "darkolivegreen"))+
   theme(legend.title=element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.text=element_text(size=14), axis.title = element_text(size = 14), legend.text = element_text(size = 14))+ 
   xlab(" ") +
   ylab("Call rate (per minute)")+
@@ -262,7 +271,7 @@ g
 #for fusions: "indianred1", "indianred4"
 
 
-ggsave(paste0(plot_dir, "fusion_0727_perind_15mins.png"), width = 35, height = 20, units = "cm", g)
+ggsave(paste0(plot_dir, "fission_0655_perind_15mins.png"), width = 35, height = 20, units = "cm", g)
 
 
 
@@ -292,10 +301,10 @@ events_filt_all <- data.frame()
 
 for (i in 1:nrow(events_filt)){
 
-
+  #get the calling behaviour of the first event
   call_df_event_1 <- df_out_filt[df_out_filt$UTC_time == unique(df_out_filt$UTC_time)[i],]
 
-  #get the first event
+  #get the events movement info by finding the same date of the calling event to the events_filt dataframe
   events_filt_1 <- events_filt[events_filt$datetime %in% unique(df_out_filt$UTC_time)[[i]],]
 
   #I want to put each individual in group A and B into a dataframe where each ind is a row and they have another column for distance travelled and subgroup ID
@@ -316,7 +325,7 @@ for (i in 1:nrow(events_filt)){
   event_1 <- rbind(id_A, id_B)
   event_1$id_indx <- event_1$id
 
-  #want to get the code for the individuals in the id column
+  #get the code for the individuals in the id column
   coati_ids$id_indx <- 1:nrow(coati_ids)
 
   #merge the ID column with the event_1 column 
@@ -404,8 +413,6 @@ ggplot(data = events_filt_all[events_filt_all$fis_or_fus.label == "fission",], a
   geom_boxplot(aes(fill = bef_aft))+ 
   geom_point(position=position_jitterdodge(), size = 0.5, color = "gray3", aes(fill=bef_aft, alpha = 0.8))+
   facet_wrap(~ind+status)
-
-
 
 
 #to see which individuals more often leave
